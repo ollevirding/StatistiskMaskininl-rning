@@ -10,4 +10,28 @@ import sklearn.model_selection as skl_ms
 
 
 train = pd.read_csv('train.csv')
-test = pd.read_csv('test.csv')
+
+Word_female = train['Number words female']
+Word_male = train['Number words male']
+
+for index, row in train.iterrows():
+    if row['Lead'] == 'Female':
+        Word_female.at[index] += row['Number of words lead']
+    else:
+        Word_male.at[index] += row['Number of words lead']
+
+
+plt.boxplot([Word_male, Word_female])
+plt.xticks([1,2],['Male','Female'])
+plt.title("Number of words split across gender")
+plt.show()
+
+
+plt.scatter(train['Year'] ,[Word_male - Word_female])
+plt.title("Number of words split across gender and year")
+plt.show()
+
+plt.scatter([Word_male - Word_female], train['Gross'])
+plt.title("Income based on the fraction of words spoken by Male divided by Female")
+plt.show()
+
