@@ -9,7 +9,7 @@ import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
 
 from sklearn import tree
-from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 
 np.random.seed(1)
 
@@ -71,7 +71,8 @@ models.append(skl_nb.KNeighborsClassifier(n_neighbors=4))
 models.append(tree.DecisionTreeClassifier(max_depth = 7))
 models.append(BaggingClassifier())
 models.append(RandomForestClassifier())
-
+models.append(AdaBoostClassifier())
+models.append(GradientBoostingClassifier())
 
 missclassification = np.zeros((n_fold,len(models)))
 cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
@@ -87,5 +88,5 @@ for i,(train_index,val_index) in enumerate(cv.split(X)):
 
 plt.boxplot(missclassification)
 plt.title('Accuracy for different models')
-plt.xticks(np.arange(7)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest'))
+plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
 plt.show()
