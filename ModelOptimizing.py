@@ -11,6 +11,12 @@ import sklearn.model_selection as skl_ms
 from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
 
+train = pd.read_csv('train.csv')
+test = pd.read_csv('test.csv')
+
+X = train.drop(columns=['Lead'])
+y = train['Lead']
+
 # kNN
 n_runs = 10
 K = np.arange(1,100)
