@@ -20,7 +20,16 @@ test = pd.read_csv('test.csv')
 
 X = train.drop(columns=['Lead'])
 y = train['Lead']
-X_train,X_val,y_train,y_val = skl_ms.train_test_split(X,y,test_size=0.3)
+
+trainI = np.random.choice(train.shape[0],size=800,replace=False)
+trainIndex = train.index.isin(trainI)
+traindata = train.iloc[trainIndex]
+valdata = train.iloc[~trainIndex]
+
+X_train = traindata.drop(columns=['Lead'])
+y_train = traindata['Lead']
+X_val = valdata.drop(columns=['Lead'])
+y_val = valdata['Lead']
 
 # Logistic regression
 model = skl_lm.LogisticRegression(solver='liblinear')
@@ -85,6 +94,27 @@ prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Accuracy for GradientBoosting: {acc}')
 
+# Love boosting v2
+models = []
+models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
+models.append(skl_da.QuadraticDiscriminantAnalysis())
+
+for m in range(np.shape(models)[0]):
+    model = models[m]
+    model.fit(X_train,y_train)
+    prediction = model.predict(X_val)
+    for i,j in enumerate(prediction):
+        if j != y_train.iloc[i]:
+            traindata.loc[np.shape(traindata)[0]+1]=(traindata.loc[y_train.index[i]])
+            X_train = traindata.drop(columns=['Lead'])
+            y_train = traindata['Lead']
+
+model = GradientBoostingClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Love boosting v2 accuracy: {acc}')
+    
 n_fold = 10
 models = []
 models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
