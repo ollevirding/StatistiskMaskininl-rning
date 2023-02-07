@@ -87,3 +87,8 @@ plt.boxplot(missclassification)
 plt.title('Accuracy for different models')
 plt.xticks(np.arange(6)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging'))
 plt.show()
+
+
+
+
+#def mftobinary():
