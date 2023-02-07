@@ -64,12 +64,14 @@ print(f'Accuracy for bagging: {acc}')
 
 n_fold = 10
 models = []
-models.append(skl_lm.LogisticRegression(solver='liblinear'))
+models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
 models.append(skl_da.LinearDiscriminantAnalysis())
 models.append(skl_da.QuadraticDiscriminantAnalysis())
 models.append(skl_nb.KNeighborsClassifier(n_neighbors=4))
 models.append(tree.DecisionTreeClassifier(max_depth = 7))
 models.append(BaggingClassifier())
+models.append(RandomForestClassifier())
+
 
 missclassification = np.zeros((n_fold,len(models)))
 cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
@@ -85,5 +87,5 @@ for i,(train_index,val_index) in enumerate(cv.split(X)):
 
 plt.boxplot(missclassification)
 plt.title('Accuracy for different models')
-plt.xticks(np.arange(6)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging'))
+plt.xticks(np.arange(7)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest'))
 plt.show()
