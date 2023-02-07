@@ -10,6 +10,8 @@ import sklearn.model_selection as skl_ms
 
 from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
+
 
 np.random.seed(1)
 
@@ -61,6 +63,27 @@ model.fit(X_train,y_train)
 prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Accuracy for bagging: {acc}')
+
+# RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for randomforestclassifier: {acc}')
+
+# AdaBoost
+model = AdaBoostClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for AdaBoosting: {acc}')
+
+# GradientBoosting
+model = GradientBoostingClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for GradientBoosting: {acc}')
 
 n_fold = 10
 models = []
