@@ -9,7 +9,9 @@ import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
 
 from sklearn import tree
-from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
+
 
 np.random.seed(1)
 
@@ -62,14 +64,38 @@ prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Accuracy for bagging: {acc}')
 
+# RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for randomforestclassifier: {acc}')
+
+# AdaBoost
+model = AdaBoostClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for AdaBoosting: {acc}')
+
+# GradientBoosting
+model = GradientBoostingClassifier()
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for GradientBoosting: {acc}')
+
 n_fold = 10
 models = []
-models.append(skl_lm.LogisticRegression(solver='liblinear'))
+models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
 models.append(skl_da.LinearDiscriminantAnalysis())
 models.append(skl_da.QuadraticDiscriminantAnalysis())
 models.append(skl_nb.KNeighborsClassifier(n_neighbors=4))
 models.append(tree.DecisionTreeClassifier(max_depth = 7))
 models.append(BaggingClassifier())
+models.append(RandomForestClassifier())
+models.append(AdaBoostClassifier())
+models.append(GradientBoostingClassifier())
 
 missclassification = np.zeros((n_fold,len(models)))
 cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
@@ -85,10 +111,6 @@ for i,(train_index,val_index) in enumerate(cv.split(X)):
 
 plt.boxplot(missclassification)
 plt.title('Accuracy for different models')
-plt.xticks(np.arange(6)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging'))
+plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
 plt.show()
-
-
-
-
 #def mftobinary():
