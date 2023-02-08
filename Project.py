@@ -98,16 +98,18 @@ print(f'Accuracy for GradientBoosting: {acc}')
 models = []
 models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
 models.append(skl_da.QuadraticDiscriminantAnalysis())
+models.append(RandomForestClassifier())
 
 for m in range(np.shape(models)[0]):
     model = models[m]
     model.fit(X_train,y_train)
-    prediction = model.predict(X_val)
+    prediction = model.predict(X_train)
     for i,j in enumerate(prediction):
         if j != y_train.iloc[i]:
-            traindata.loc[np.shape(traindata)[0]+1]=(traindata.loc[y_train.index[i]])
-            X_train = traindata.drop(columns=['Lead'])
-            y_train = traindata['Lead']
+            for k in range(10):
+                traindata.loc[np.shape(traindata)[0]+1]=(traindata.loc[y_train.index[i]])
+    X_train = traindata.drop(columns=['Lead'])
+    y_train = traindata['Lead']
 
 model = GradientBoostingClassifier()
 model.fit(X_train,y_train)
