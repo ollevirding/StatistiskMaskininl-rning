@@ -1,3 +1,4 @@
+#!/bin/python3
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +11,7 @@ import sklearn.model_selection as skl_ms
 
 from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
-from xgboost import XGBClassifier
+#from xgboost import XGBClassifier
 
 
 np.random.seed(1)
@@ -53,11 +54,38 @@ acc = np.mean(prediction == y_val)
 print(f'Accuracy for QDA: {acc}')
 
 # kNN
-model = skl_nb.KNeighborsClassifier(n_neighbors=4)
+
+
+def inputNormalizationKNN(x,xval):
+    x=x.copy()
+    xval = xval.copy()
+    maxs = [max(x[col]) for col in x]
+    mins = [min(x[col]) for col in x]
+
+    for i,col in enumerate(x):
+        #for val in x[col]
+        x[col] = x[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        xval[col] = xval[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
+    #print(x)
+
+    return [x,xval]
+
+x_train_norm, x_val_norm = inputNormalizationKNN(X_train, X_val)
+
+#n_neigh var 4 förut
+model = skl_nb.KNeighborsClassifier(n_neighbors=30)#, weights = "distance")
+model.fit(x_train_norm,y_train)
+prediction = model.predict(x_val_norm)
+acc1 = np.mean(prediction == y_val)
+print(f'Accuracy for kNN (normalized): {acc1}')
+
+model = skl_nb.KNeighborsClassifier(n_neighbors=30)#, weights = "distance")
 model.fit(X_train,y_train)
 prediction = model.predict(X_val)
-acc = np.mean(prediction == y_val)
-print(f'Accuracy for kNN: {acc}')
+acc2 = np.mean(prediction == y_val)
+print(f'Accuracy for kNN: {acc2}')
+
 
 # Tree based method
 model = tree.DecisionTreeClassifier(max_depth = 7)
