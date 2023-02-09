@@ -54,6 +54,9 @@ test = pd.read_csv('test.csv')
 X = train.drop(columns=['Lead'])
 y = train['Lead']
 
+
+#bättre koll på error: kfold validation, kan fixa //åke
+
 trainI = np.random.choice(train.shape[0],size=800,replace=False)
 trainIndex = train.index.isin(trainI)
 traindata = train.iloc[trainIndex]
