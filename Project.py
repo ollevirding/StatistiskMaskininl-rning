@@ -30,16 +30,22 @@ def inputNormalization(x,xval, change = False):
         xval[col] = xval[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
         #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
     return [x,xval]
-
-def logInput(x, col, change = False): #fixa sp två x, xtrain och xval
+#fixa sp två x, xtrain och xval
+def logInput(x, col, change = False): 
     if not change: x = x.copy()
     x[col] = x[col].apply(lambda val: np.log(val) if val>0 else 0)
     return x
 
 
 def weights(x, col, w, change = False):
+    if not change: x = x.copy()
     x[col] = x[col].apply(lambda val: val*w)
+    return x
 
+def removeCol(x, col, change = False):
+    if not change: x = x.copy()
+    x.drop(col, axis=1)
+    return x
 
 
 train = pd.read_csv('train.csv')
@@ -57,7 +63,6 @@ X_train = traindata.drop(columns=['Lead'])
 y_train = traindata['Lead']
 X_val = valdata.drop(columns=['Lead'])
 y_val = valdata['Lead']
-
 
 #Input manipulation
 #Viktigt att utföra samma operationer på train och evaluation
@@ -91,6 +96,12 @@ weights(X_val, "Number words female", 1.1, True)
 
 weights(X_train, "Number of words lead", 1.1, True)
 weights(X_val, "Number of words lead", 1.1, True)
+'''
+'''
+removeCol(X_train, "Total words", True)
+removeCol(X_val, "Total words", True)
+removeCol(X_train, "Year", True)
+removeCol(X_val, "Year", True)
 '''
 
 # Logistic regression
