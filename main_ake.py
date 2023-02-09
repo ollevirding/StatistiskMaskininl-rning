@@ -38,6 +38,11 @@ def plotData(x,y, malecol = "blue", femcol = "red"):
 
 plotData("Year", "Gross")
 
+
+#kolla om t.ex year har mest påverkan i början eller slut osv -> log
+#softmax
+
+
 #print(x)
 #print(y)
 

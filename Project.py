@@ -16,6 +16,28 @@ from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoost
 
 np.random.seed(1)
 
+def inputNormalization(x,xval, change = False):
+    if not change: 
+        x=x.copy()
+        xval = xval.copy()
+
+    maxs = [max(x[col]) for col in x]
+    mins = [min(x[col]) for col in x]
+
+    for i,col in enumerate(x):
+        #for val in x[col]
+        x[col] = x[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        xval[col] = xval[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
+    return [x,xval]
+
+def logInput(x, col, change = False):
+    if not change: x = x.copy()
+    x[col] = x[col].apply(lambda val: np.log(val) if val else 0)
+    return x
+
+
+
 train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
 
@@ -31,6 +53,19 @@ X_train = traindata.drop(columns=['Lead'])
 y_train = traindata['Lead']
 X_val = valdata.drop(columns=['Lead'])
 y_val = valdata['Lead']
+
+
+#Input manipulation
+x_train_norm, x_val_norm = inputNormalization(X_train, X_val)
+#logInput(X_train, "Gross", True)
+#logInput(X_val, "Gross", True)
+#logInput(X_val, "Total words", True)
+#logInput(X_train, "Total words", True)
+'''
+for col in X_train: #QDA 80, LDA 88, KNN(STD) 79, LOVE BOOSTING 25
+    logInput(X_train, col, True)
+    logInput(X_val, col ,True)
+'''
 
 # Logistic regression
 model = skl_lm.LogisticRegression(solver='liblinear')
@@ -54,25 +89,6 @@ acc = np.mean(prediction == y_val)
 print(f'Accuracy for QDA: {acc}')
 
 # kNN
-
-
-def inputNormalizationKNN(x,xval):
-    x=x.copy()
-    xval = xval.copy()
-    maxs = [max(x[col]) for col in x]
-    mins = [min(x[col]) for col in x]
-
-    for i,col in enumerate(x):
-        #for val in x[col]
-        x[col] = x[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
-        xval[col] = xval[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
-        #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
-    #print(x)
-
-    return [x,xval]
-
-x_train_norm, x_val_norm = inputNormalizationKNN(X_train, X_val)
-
 #n_neigh var 4 förut
 model = skl_nb.KNeighborsClassifier(n_neighbors=30)#, weights = "distance")
 model.fit(x_train_norm,y_train)
@@ -145,65 +161,68 @@ prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Love boosting v2 accuracy: {acc}')
     
-n_fold = 10
-models = []
-models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
-models.append(skl_da.LinearDiscriminantAnalysis())
-models.append(skl_da.QuadraticDiscriminantAnalysis())
-models.append(skl_nb.KNeighborsClassifier(n_neighbors=30))#4))
-models.append(tree.DecisionTreeClassifier(max_depth = 7))
-models.append(BaggingClassifier())
-models.append(RandomForestClassifier())
-models.append(AdaBoostClassifier())
-models.append(GradientBoostingClassifier())
 
-'''
-models2 = []
-models2.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
-models2.append(skl_da.LinearDiscriminantAnalysis())
-models2.append(skl_da.QuadraticDiscriminantAnalysis())
-models2.append(skl_nb.KNeighborsClassifier(n_neighbors=30))#4))
-models2.append(tree.DecisionTreeClassifier(max_depth = 7))
-models2.append(BaggingClassifier())
-models2.append(RandomForestClassifier())
-models2.append(AdaBoostClassifier())
-models2.append(GradientBoostingClassifier())
-'''
-missclassification = np.zeros((n_fold,len(models)))
-'''
-missclassification2 = np.zeros((n_fold,len(models)))
-'''
-cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
+if False:
+    n_fold = 10
+    models = []
+    models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
+    models.append(skl_da.LinearDiscriminantAnalysis())
+    models.append(skl_da.QuadraticDiscriminantAnalysis())
+    models.append(skl_nb.KNeighborsClassifier(n_neighbors=4))#30))
+    models.append(tree.DecisionTreeClassifier(max_depth = 7))
+    models.append(BaggingClassifier())
+    models.append(RandomForestClassifier())
+    models.append(AdaBoostClassifier())
+    models.append(GradientBoostingClassifier())
 
-for i,(train_index,val_index) in enumerate(cv.split(X)):
-    X_train,X_val = X.iloc[train_index],X.iloc[val_index]
-    y_train,y_val = y.iloc[train_index],y.iloc[val_index]
+    '''
+    models2 = []
+    models2.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
+    models2.append(skl_da.LinearDiscriminantAnalysis())
+    models2.append(skl_da.QuadraticDiscriminantAnalysis())
+    models2.append(skl_nb.KNeighborsClassifier(n_neighbors=30))#4))
+    models2.append(tree.DecisionTreeClassifier(max_depth = 7))
+    models2.append(BaggingClassifier())
+    models2.append(RandomForestClassifier())
+    models2.append(AdaBoostClassifier())
+    models2.append(GradientBoostingClassifier())
+    '''
+    missclassification = np.zeros((n_fold,len(models)))
+    '''
+    missclassification2 = np.zeros((n_fold,len(models)))
+    '''
+    cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
 
-    X_train_norm, X_val_norm = inputNormalizationKNN(X_train, X_val)
+    for i,(train_index,val_index) in enumerate(cv.split(X)):
+        X_train,X_val = X.iloc[train_index],X.iloc[val_index]
+        y_train,y_val = y.iloc[train_index],y.iloc[val_index]
 
-    for m in range(np.shape(models)[0]):
-        model = models[m]
-        model.fit(X_train,y_train)
-        prediction = model.predict(X_val)
-        missclassification[i,m] = np.mean(prediction == y_val)
-'''
-        model2 = models2[m]
-        model2.fit(X_train_norm,y_train)
-        prediction2 = model.predict(X_val_norm)       
-        missclassification2[i,m] = np.mean(prediction == y_val)
-'''
+        X_train_norm, X_val_norm = inputNormalization(X_train, X_val)
 
-        
+        for m in range(np.shape(models)[0]):
+            model = models[m]
+            model.fit(X_train,y_train)
+            prediction = model.predict(X_val)
+            missclassification[i,m] = np.mean(prediction == y_val)
+    '''
+            model2 = models2[m]
+            model2.fit(X_train_norm,y_train)
+            prediction2 = model.predict(X_val_norm)       
+            missclassification2[i,m] = np.mean(prediction == y_val)
+    '''
 
-plt.figure(1)
-plt.boxplot(missclassification)
-plt.title('Accuracy for different models')
-plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
-'''
-plt.figure(2)
-plt.boxplot(missclassification2)
-plt.title('Accuracy for different models, NORM')
-plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
-plt.show()
-'''
+
+
+    plt.figure(1)
+    plt.boxplot(missclassification)
+    plt.title('Accuracy for different models')
+    plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
+    plt.show()
+    '''
+    plt.figure(2)
+    plt.boxplot(missclassification2)
+    plt.title('Accuracy for different models, NORM')
+    plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
+    plt.show()
+    '''
 #def mftobinary():
