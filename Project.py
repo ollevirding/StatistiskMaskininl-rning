@@ -31,10 +31,14 @@ def inputNormalization(x,xval, change = False):
         #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
     return [x,xval]
 
-def logInput(x, col, change = False):
+def logInput(x, col, change = False): #fixa sp två x, xtrain och xval
     if not change: x = x.copy()
-    x[col] = x[col].apply(lambda val: np.log(val) if val else 0)
+    x[col] = x[col].apply(lambda val: np.log(val) if val>0 else 0)
     return x
+
+
+def weights(x, col, w, change = False):
+    x[col] = x[col].apply(lambda val: val*w)
 
 
 
@@ -56,6 +60,8 @@ y_val = valdata['Lead']
 
 
 #Input manipulation
+#Viktigt att utföra samma operationer på train och evaluation
+
 x_train_norm, x_val_norm = inputNormalization(X_train, X_val)
 #logInput(X_train, "Gross", True)
 #logInput(X_val, "Gross", True)
@@ -65,6 +71,26 @@ x_train_norm, x_val_norm = inputNormalization(X_train, X_val)
 for col in X_train: #QDA 80, LDA 88, KNN(STD) 79, LOVE BOOSTING 25
     logInput(X_train, col, True)
     logInput(X_val, col ,True)
+'''
+
+'''#bättre på vissa, andra sämre
+inputNormalization(X_train, X_val, True) 
+logInput(X_train, "Number of male actors", True)
+logInput(X_val, "Number of male actors", True)
+'''
+
+#number of words across gender - stor påverkan
+'''
+inputNormalization(X_train, X_val, True) 
+
+weights(X_train, "Number of male actors", 1.1, True)
+weights(X_val, "Number of male actors", 1.1, True)
+
+weights(X_train, "Number words female", 1.1, True)
+weights(X_val, "Number words female", 1.1, True)
+
+weights(X_train, "Number of words lead", 1.1, True)
+weights(X_val, "Number of words lead", 1.1, True)
 '''
 
 # Logistic regression
