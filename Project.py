@@ -55,7 +55,7 @@ X = train.drop(columns=['Lead'])
 y = train['Lead']
 
 
-#bättre koll på error: kfold validation, kan fixa //åke
+#bättre koll på error och bättre prestanda: kfold validation, kan fixa //åke
 
 trainI = np.random.choice(train.shape[0],size=800,replace=False)
 trainIndex = train.index.isin(trainI)
