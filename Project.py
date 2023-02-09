@@ -56,6 +56,7 @@ y = train['Lead']
 
 
 #bättre koll på error och bättre prestanda: kfold validation, kan fixa //åke
+#eventuellt sätta åsido data för E_new vid testning av hyperparameter "test set"
 
 trainI = np.random.choice(train.shape[0],size=800,replace=False)
 trainIndex = train.index.isin(trainI)
