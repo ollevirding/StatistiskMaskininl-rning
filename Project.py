@@ -150,27 +150,60 @@ models = []
 models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
 models.append(skl_da.LinearDiscriminantAnalysis())
 models.append(skl_da.QuadraticDiscriminantAnalysis())
-models.append(skl_nb.KNeighborsClassifier(n_neighbors=4))
+models.append(skl_nb.KNeighborsClassifier(n_neighbors=30))#4))
 models.append(tree.DecisionTreeClassifier(max_depth = 7))
 models.append(BaggingClassifier())
 models.append(RandomForestClassifier())
 models.append(AdaBoostClassifier())
 models.append(GradientBoostingClassifier())
 
+'''
+models2 = []
+models2.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
+models2.append(skl_da.LinearDiscriminantAnalysis())
+models2.append(skl_da.QuadraticDiscriminantAnalysis())
+models2.append(skl_nb.KNeighborsClassifier(n_neighbors=30))#4))
+models2.append(tree.DecisionTreeClassifier(max_depth = 7))
+models2.append(BaggingClassifier())
+models2.append(RandomForestClassifier())
+models2.append(AdaBoostClassifier())
+models2.append(GradientBoostingClassifier())
+'''
 missclassification = np.zeros((n_fold,len(models)))
+'''
+missclassification2 = np.zeros((n_fold,len(models)))
+'''
 cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
 
 for i,(train_index,val_index) in enumerate(cv.split(X)):
     X_train,X_val = X.iloc[train_index],X.iloc[val_index]
     y_train,y_val = y.iloc[train_index],y.iloc[val_index]
+
+    X_train_norm, X_val_norm = inputNormalizationKNN(X_train, X_val)
+
     for m in range(np.shape(models)[0]):
         model = models[m]
         model.fit(X_train,y_train)
         prediction = model.predict(X_val)
         missclassification[i,m] = np.mean(prediction == y_val)
+'''
+        model2 = models2[m]
+        model2.fit(X_train_norm,y_train)
+        prediction2 = model.predict(X_val_norm)       
+        missclassification2[i,m] = np.mean(prediction == y_val)
+'''
 
+        
+
+plt.figure(1)
 plt.boxplot(missclassification)
 plt.title('Accuracy for different models')
 plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
+'''
+plt.figure(2)
+plt.boxplot(missclassification2)
+plt.title('Accuracy for different models, NORM')
+plt.xticks(np.arange(9)+1,('Logistic Regression','LDA','QDA','kNN','Tree Based','Bagging', 'Random Forest', 'AdaBoost', 'GradientBoost'))
 plt.show()
+'''
 #def mftobinary():
