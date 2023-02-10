@@ -13,6 +13,13 @@ from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 #from xgboost import XGBClassifier
 
+'''
+K-fold låter oss använda hela datasetet och samtidigt få ett reliable värde 
+på expected new error E_new 
+--> Lågt E_new
+'''
+
+
 np.random.seed(1)
 
 traincomplete = pd.read_csv('train.csv')
