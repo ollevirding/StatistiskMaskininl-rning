@@ -13,6 +13,7 @@ from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 #from xgboost import XGBClassifier
 
+from kfold import kfold
 
 np.random.seed(1)
 
