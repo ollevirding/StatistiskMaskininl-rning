@@ -17,6 +17,10 @@ from kfold import kfold
 
 np.random.seed(1)
 
+#räkna ut generalization gap: ~ E_hold - E_train
+#kfold analysera hyperparemeter kan ge overfitting, dela upp ännu
+#mer och gör felanalys på den delen
+
 def inputNormalization(x,xval, change = False):
     if not change: 
         x=x.copy()
@@ -153,7 +157,10 @@ acc = np.mean(prediction == y_val)
 print(f'Accuracy for tree based method: {acc}')
 
 # Bagging
-model = BaggingClassifier()
+#model = BaggingClassifier(estimator= skl_nb.KNeighborsClassifier(n_neighbors = 3))
+model = BaggingClassifier(estimator= skl_da.QuadraticDiscriminantAnalysis(), n_estimators = 50) #från 80->86, 87 med n_estimators = 50 (B)
+#model = BaggingClassifier(estimator= tree.DecisionTreeClassifier(max_depth = 10))
+#model = BaggingClassifier(n_estimators = 50)
 model.fit(X_train,y_train)
 prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
