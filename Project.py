@@ -157,11 +157,13 @@ acc = np.mean(prediction == y_val)
 print(f'Accuracy for tree based method: {acc}')
 
 # Bagging
+#på bagging kan vi använda hela training set, den ger bra predictor E_new (typ kfold) fast gratis, se bagging1.py
 #model = BaggingClassifier(estimator= skl_nb.KNeighborsClassifier(n_neighbors = 3))
-model = BaggingClassifier(estimator= skl_da.QuadraticDiscriminantAnalysis(), n_estimators = 50) #från 80->86, 87 med n_estimators = 50 (B)
+model = BaggingClassifier(estimator= skl_da.QuadraticDiscriminantAnalysis(), n_estimators = 200, oob_score=True) #från 80->86, 87 med n_estimators = 200 (B)#dock 50 räcker
 #model = BaggingClassifier(estimator= tree.DecisionTreeClassifier(max_depth = 10))
 #model = BaggingClassifier(n_estimators = 50)
 model.fit(X_train,y_train)
+print(model.oob_score_)
 prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Accuracy for bagging: {acc}')

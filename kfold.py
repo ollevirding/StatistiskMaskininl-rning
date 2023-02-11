@@ -21,6 +21,9 @@ def kfold(model, **args):
     K-fold låter oss använda hela datasetet och samtidigt få ett reliable värde 
     på expected new error E_new 
     --> Lägre E_new
+    1.Räkna ut error för varje del av det splittade trainingsetet
+    2.Ta average och få E_new
+    3.Använd nu hela traningset för model 
     '''
     np.random.seed(1)
 
