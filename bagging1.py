@@ -47,6 +47,8 @@ model.fit(traincompletex_norm, traincompletey)
 '''
 Öka trainingdata med liknande data(bootstrapping), räkna ut fit och error för varje del i uppdelat set
 Fit blir average(el. majority vote) av allas svar
+Reducerar varians - därför bra för modeller med hög varians, ex knn där n<<, andra komplexa modeller
+
 E_new ~ average av alla fel
 Varje del-lösning bra bias men dålig varians(låg n) -> average påverkar ej bias
 men reducerar varians
