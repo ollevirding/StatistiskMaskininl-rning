@@ -14,6 +14,9 @@ from kfold import kfold
 
 
 
+
+
+
 # Logistic regression
 print("Logistic", kfold(skl_lm.LogisticRegression, solver='liblinear')[1])
 
@@ -27,13 +30,15 @@ print("QDA", kfold(skl_da.QuadraticDiscriminantAnalysis)[1])
 
 # kNN
 print("KNN", kfold(skl_nb.KNeighborsClassifier,n_neighbors=30)[1])
+print("KNN", kfold(skl_nb.KNeighborsClassifier, norm = True,n_neighbors=30)[1])
+
 
 
 # Tree based method
 print("Tree", kfold(tree.DecisionTreeClassifier,max_depth = 7)[1])
 
 # Bagging
-print("Bagging", kfold(BaggingClassifier)[1])
+#print("Bagging", kfold(BaggingClassifier)[1]) onödigt bagging kfold, använd oob_score och skicka in hela datasetet
 
 # RandomForestClassifier
 print("Random Forest", kfold(RandomForestClassifier)[1])

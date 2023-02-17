@@ -1,4 +1,7 @@
 #!/bin/python3
+
+
+#https://www.overleaf.com/6194581128zzzmwrxmkpgk
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,6 +23,23 @@ np.random.seed(1)
 #räkna ut generalization gap: ~ E_hold - E_train
 #kfold analysera hyperparemeter kan ge overfitting, dela upp ännu
 #mer och gör felanalys på den delen
+
+
+
+def wrds():
+    tot = X.get("Total words")
+    fem = X.get("Number words female")
+    mal = X.get("Number words male")
+   
+    #X['Number words female'] = fem/tot
+    #X['Number words male'] = mal/tot
+    X.drop(columns=["Number words male"])
+    X["Number words female"] = fem/mal
+    #x.drop("Number words female")
+    #x.drop("Number words male")
+
+
+
 
 def inputNormalization(x,xval, change = False):
     if not change: 
@@ -75,6 +95,9 @@ y_val = valdata['Lead']
 
 #Input manipulation
 #Viktigt att utföra samma operationer på train och evaluation
+wrds()
+#print(X["Number words female"])
+#print(X["Number words male"])
 
 x_train_norm, x_val_norm = inputNormalization(X_train, X_val)
 #logInput(X_train, "Gross", True)

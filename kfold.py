@@ -13,17 +13,30 @@ from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 #from xgboost import XGBClassifier
 
+def inputNormalization(x,xval, change = False):
+    if not change: 
+        x=x.copy()
+        xval = xval.copy()
 
+    maxs = [max(x[col]) for col in x]
+    mins = [min(x[col]) for col in x]
+
+    for i,col in enumerate(x):
+        #for val in x[col]
+        x[col] = x[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        xval[col] = xval[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
+    return [x,xval]
 
 #fixa så skicka in x,y iaf vill fippla med inputsen, ex normalsering i knn
-def kfold(model, **args):
+def kfold(model, norm = False, **args):
     '''
     K-fold låter oss använda hela datasetet och samtidigt få ett reliable värde 
     på expected new error E_new 
     --> Lägre E_new
-    1.Räkna ut error för varje del av det splittade trainingsetet
-    2.Ta average och få E_new
-    3.Använd nu hela traningset för model 
+    1. Räkna ut error för varje del av det splittade trainingsetet
+    2. Ta average och få E_new
+    3. Använd nu hela trainingset för model 
     '''
     np.random.seed(1)
 
@@ -31,7 +44,7 @@ def kfold(model, **args):
 
     traincompletex = traincomplete.drop(columns=["Lead"])
     traincompletey = traincomplete["Lead"]
-
+    
 
     #test = pd.read_csv('test.csv')
 
@@ -83,25 +96,26 @@ def kfold(model, **args):
                 hold = traincompleteshuffle.iloc[r]#[ind:splitInd[i+1]]
                 train = traincompleteshuffle.iloc[rnot]
 
-                trainx = train.drop(columns=["Lead"])
-                trainy = train["Lead"]
-                holdx = hold.drop(columns=["Lead"])
-                holdy = hold["Lead"]
-                #rind = xshuffle.index.isin(r) # denna kommer nog ta bort shuffle :( sorterar kring index av x ine xshuffle
-                #hold = xshuffle.iloc[rind]
-                #train = xshuffle.iloc[~rind]
-                #print(hold.shape, train.shape)
-                #print(hold.shape[0] + train.shape[0])
-                #print(hold.index)
-
-
-                #model = skl_lm.LogisticRegression(solver='liblinear')
-                #model = skl_da.QuadraticDiscriminantAnalysis()
-                m = model(**args)
-                m.fit(trainx, trainy)
-                prediction = m.predict(holdx)
-                acc = np.mean(prediction == holdy)
-                Ehold.append(acc)
+            trainx = train.drop(columns=["Lead"])
+            trainy = train["Lead"]
+            holdx = hold.drop(columns=["Lead"])
+            holdy = hold["Lead"]
+            if norm:
+                 trainx, holdx = inputNormalization(trainx,holdx)
+            #rind = xshuffle.index.isin(r) # denna kommer nog ta bort shuffle :( sorterar kring index av x ine xshuffle
+            #hold = xshuffle.iloc[rind]
+            #train = xshuffle.iloc[~rind]
+            #print(hold.shape, train.shape)
+            #print(hold.shape[0] + train.shape[0])
+            #print(hold.index)
+            #model = skl_lm.LogisticRegression(solver='liblinear')
+            #model = skl_da.QuadraticDiscriminantAnalysis()
+            m = model(**args)
+            #trainx, holdx = inputNormalization(trainx,holdx, False)
+            m.fit(trainx, trainy)
+            prediction = m.predict(holdx)
+            acc = np.mean(prediction == holdy)
+            Ehold.append(acc)
 
     Eholdavg = np.average(Ehold)
     #print("E_new approx", Eholdavg)
@@ -113,6 +127,8 @@ def kfold(model, **args):
     goodm = model(**args)
     goodm.fit(traincompletex, traincompletey)
     return [goodm, Eholdavg]
+
+
 
 #kfold(skl_lm.LogisticRegression, solver = "liblinear")
 #print(kfold(skl_da.QuadraticDiscriminantAnalysis))

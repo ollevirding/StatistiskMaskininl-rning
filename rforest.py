@@ -14,11 +14,14 @@ traincomplete = pd.read_csv('train.csv') # kanske egentligen borde vara paramete
 traincompletex = traincomplete.drop(columns=["Lead"])
 traincompletey = traincomplete["Lead"]
 
+
+
+
 p = 13
 q = int(np.sqrt(p))
 
 
-model = RandomForestClassifier(oob_score=True, n_estimators=500#, max_depth=7)
+model = RandomForestClassifier(oob_score=True, n_estimators=500)#, max_depth=7)
 
 ''' Tror att RandomForest = Bagging med Tree om max_features = None (tar med alla inputs som i bagging)
 model = RandomForestClassifier(oob_score=True, n_estimators=500, max_features=None)#, max_depth=7)
