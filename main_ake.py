@@ -38,6 +38,22 @@ def plotData(x,y, malecol = "blue", femcol = "red"):
 
 plotData("Year", "Gross")
 
+
+print(data.get("Year").corr(data.get("Total words")))
+
+'''
+year
+gross
+words?
+'''
+
+
+
+
+#kolla om t.ex year har mest påverkan i början eller slut osv -> log
+#softmax
+
+
 #print(x)
 #print(y)
 
