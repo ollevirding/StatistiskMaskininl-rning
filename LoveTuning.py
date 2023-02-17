@@ -38,11 +38,11 @@ cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
 # define space
 space = dict()
 #space['loss'] = ['log_loss','exponential'] # log_loss best
-#space['learning_rate'] = np.linspace(0.01,1,10) # 0.45 best
-#space['n_estimators'] = [5,10,25,50,100,150,200] # 150 best
-space['subsample'] = np.linspace(0.01,1,10) # 0.78 best
-space['criterion'] = ['friedman_mse','squared_error'] # friedman_use best
-space['min_samples_split'] = np.arange(2,100,10) # 12 best
+space['learning_rate'] = np.linspace(0.01,1,10) # 0.45 best
+space['n_estimators'] = np.linspace(100,200,10) # 150 best
+#space['subsample'] = np.linspace(0.01,1,10) # 0.78 best
+#space['criterion'] = ['friedman_mse','squared_error'] # friedman_use best
+#space['min_samples_split'] = np.arange(2,100,10) # 12 best
 #space['min_samples_leaf'] = np.arange(1,100,10)
 #space['min_weight_fraction_leaf'] = np.linspace(0,0.5,10)
 #space['max_depth'] = np.arange(1,100,10)

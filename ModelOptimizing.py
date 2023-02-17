@@ -9,7 +9,7 @@ import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
 
 from sklearn import tree
-from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier,GradientBoostingClassifier
 
 train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
@@ -35,7 +35,7 @@ average_mis = np.mean(missclassification,axis=0)
 plt.plot(K,average_mis)
 plt.show()  
 
-# Tree based method
+#Tree based method
 n_runs = 20
 K = np.arange(1,20)
 

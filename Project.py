@@ -88,7 +88,7 @@ acc = np.mean(prediction == y_val)
 print(f'Accuracy for AdaBoosting: {acc}')
 
 # GradientBoosting
-model = GradientBoostingClassifier()
+model = GradientBoostingClassifier(learning_rate=0.25,n_estimators=150)
 model.fit(X_train,y_train)
 prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
@@ -96,7 +96,7 @@ print(f'Accuracy for GradientBoosting: {acc}')
 
 # Love boosting v2
 models = []
-models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
+models.append(skl_lm.LogisticRegression(solver='liblinear'))
 models.append(skl_da.QuadraticDiscriminantAnalysis())
 models.append(RandomForestClassifier())
 
@@ -111,7 +111,7 @@ for m in range(np.shape(models)[0]):
     X_train = traindata.drop(columns=['Lead'])
     y_train = traindata['Lead']
 
-model = GradientBoostingClassifier()
+model = GradientBoostingClassifier(learning_rate=0.25,n_estimators = 150)
 model.fit(X_train,y_train)
 prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
@@ -119,7 +119,7 @@ print(f'Love boosting v2 accuracy: {acc}')
     
 n_fold = 10
 models = []
-models.append(skl_lm.LogisticRegression(solver='newton-cholesky'))
+models.append(skl_lm.LogisticRegression(solver='liblinear'))
 models.append(skl_da.LinearDiscriminantAnalysis())
 models.append(skl_da.QuadraticDiscriminantAnalysis())
 models.append(skl_nb.KNeighborsClassifier(n_neighbors=4))
@@ -127,7 +127,7 @@ models.append(tree.DecisionTreeClassifier(max_depth = 7))
 models.append(BaggingClassifier())
 models.append(RandomForestClassifier())
 models.append(AdaBoostClassifier())
-models.append(GradientBoostingClassifier())
+models.append(GradientBoostingClassifier(learning_rate=0.25,n_estimators=150))
 
 missclassification = np.zeros((n_fold,len(models)))
 cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
