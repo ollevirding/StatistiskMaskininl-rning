@@ -36,10 +36,237 @@ def plotData(x,y, malecol = "blue", femcol = "red"):
     plt.show()
 
 
-plotData("Year", "Gross")
+#plotData("Year", "Gross")
+#plotData("Year","Total words")
+def gross():
+    mf = getMF("Gross")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,600)
+    #plt.ylim(0,500)
+    plt.xlabel("Pengar")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,600)
+ #   plt.ylim(0,500)
+    plt.xlabel("Pengar")
+    plt.title("female")
+    plt.show()
+    '''
+    Vill amplify stora värden och hålla små isch samma
+    '''
+
+def totwrd():
+    mf = getMF("Total words")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,50_000)
+    #plt.ylim(0,220)
+    plt.xlabel("Total words")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,50_000)
+    #plt.ylim(0,220)
+    plt.xlabel("Total words")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def femwrd():
+    mf = getMF("Number words female")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,20_000)
+    #plt.ylim(0,220)
+    plt.xlabel("female words")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,20_000)
+    #plt.ylim(0,220)
+    plt.xlabel("female words")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def malwrd():
+    mf = getMF("Number words male")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,20_000)
+    #plt.ylim(0,220)
+    plt.xlabel("male words")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,20_000)
+    #plt.ylim(0,220)
+    plt.xlabel("male words")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def diffwrd():
+    mf = getMF("Difference in words lead and co-lead")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,15_000)
+    #plt.ylim(0,220)
+    plt.xlabel("Difference in words lead and co-lead")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,15_000)
+    #plt.ylim(0,220)
+    plt.xlabel("Difference in words lead and co-lead")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+
+def leadwrd():
+    mf = getMF("Number of words lead")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,15_000)
+    #plt.ylim(0,220)
+    plt.xlabel("Number of words lead")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,15_000)
+    #plt.ylim(0,220)
+    plt.xlabel("Number of words lead")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
 
 
-print(data.get("Year").corr(data.get("Total words")))
+def nummale():
+    mf = getMF("Number of male actors")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,25)
+    #plt.ylim(0,220)
+    plt.xlabel("Number of male actors")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,25)
+    #plt.ylim(0,220)
+    plt.xlabel("Number of male actors")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def numfem():
+    mf = getMF("Number of female actors")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,25)
+    #plt.ylim(0,220)
+    plt.xlabel("Number of female actors")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,25)
+    #plt.ylim(0,220)
+    plt.xlabel("Number of female actors")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def leadage():
+    mf = getMF("Age Lead")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,100)
+    #plt.ylim(0,220)
+    plt.xlabel("Age lead")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,100)
+    #plt.ylim(0,220)
+    plt.xlabel("Age lead")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def coleadage():
+    mf = getMF("Age Co-Lead")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(0,100)
+    #plt.ylim(0,220)
+    plt.xlabel("Age colead")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(0,100)
+    #plt.ylim(0,220)
+    plt.xlabel("Age colead")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+def yr():
+    mf = getMF("Year")
+
+    plt.figure(1)
+    plt.hist(mf[0], bins=20)
+    plt.xlim(1900,2020)
+    #plt.ylim(0,220)
+    plt.xlabel("Year")
+    plt.title("male")
+
+    plt.figure(2)
+    plt.hist(mf[1], bins = 20)
+    plt.xlim(1900,2020)
+    #plt.ylim(0,220)
+    plt.xlabel("Year")
+    plt.title("female")
+    plt.show()
+    '''
+    inte superstor påverkan?
+    '''
+
+gross()
+print(data.get("Difference in words lead and co-lead").corr(data.get("Total words")))
+
+
 
 '''
 year
