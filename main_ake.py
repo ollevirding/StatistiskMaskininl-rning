@@ -13,12 +13,45 @@ data = pd.read_csv("train.csv", na_values='?', dtype={'ID': str}).dropna().reset
 x = data.iloc[:,1:-1]
 y=data.iloc[:,-1]
 
+indexMale = [i for i,gender in enumerate(data["Lead"]) if gender == "Male"]
+indexFemale = [i for i,gender in enumerate(data["Lead"]) if gender == "Female"] #alt alla index - male index
+
+#plt.figure(1)
+#plt.scatter(data["Year"], data["Lead"])
+#plt.show()
+
+#plt.figure(2)
+#plt.scatter(data["Gross"], data["Lead"])
+#plt.show()
+
+def getMF(dataName):
+    return [[data[dataName][i] for i in indexMale], [data[dataName][i] for i in indexFemale]]
+
+def plotData(x,y, malecol = "blue", femcol = "red"):
+    plt.title(f"Male {malecol} | Female {femcol}")
+    plt.xlabel(x)
+    plt.ylabel(y)
+    plt.scatter(getMF(x)[0], getMF(y)[0], c=malecol)
+    plt.scatter(getMF(x)[1], getMF(y)[1], c=femcol)
+    plt.show()
+
+
+plotData("Year", "Gross")
+
+
+print(data.get("Year").corr(data.get("Total words")))
+
+'''
+year
+gross
+words?
+'''
 
 
 
 
-
-
+#kolla om t.ex year har mest påverkan i början eller slut osv -> log
+#softmax
 
 
 #print(x)
