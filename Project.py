@@ -179,6 +179,13 @@ prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Accuracy for tree based method: {acc}')
 
+# GradientBoosting
+model = GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50)
+model.fit(X_train,y_train)
+prediction = model.predict(X_val)
+acc = np.mean(prediction == y_val)
+print(f'Accuracy for GradientBoosting: {acc}')
+
 # Bagging
 #på bagging kan vi använda hela training set, den ger bra predictor E_new (typ kfold) fast gratis, se bagging1.py
 #model = BaggingClassifier(estimator= skl_nb.KNeighborsClassifier(n_neighbors = 3))
@@ -204,13 +211,6 @@ model.fit(X_train,y_train)
 prediction = model.predict(X_val)
 acc = np.mean(prediction == y_val)
 print(f'Accuracy for AdaBoosting: {acc}')
-
-# GradientBoosting
-model = GradientBoostingClassifier(learning_rate=0.25,n_estimators=150)
-model.fit(X_train,y_train)
-prediction = model.predict(X_val)
-acc = np.mean(prediction == y_val)
-print(f'Accuracy for GradientBoosting: {acc}')
 
 # Love boosting v2
 models = []

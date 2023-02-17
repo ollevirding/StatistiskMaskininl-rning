@@ -33,24 +33,24 @@ y_val = valdata['Lead']
 model = GradientBoostingClassifier()
 
 # define evaluation
-cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3)
 
 # define space
 space = dict()
-#space['loss'] = ['log_loss','exponential'] # log_loss best
-space['learning_rate'] = np.linspace(0.01,1,10) # 0.45 best
-space['n_estimators'] = np.linspace(100,200,10) # 150 best
-#space['subsample'] = np.linspace(0.01,1,10) # 0.78 best
-#space['criterion'] = ['friedman_mse','squared_error'] # friedman_use best
-#space['min_samples_split'] = np.arange(2,100,10) # 12 best
-#space['min_samples_leaf'] = np.arange(1,100,10)
-#space['min_weight_fraction_leaf'] = np.linspace(0,0.5,10)
-#space['max_depth'] = np.arange(1,100,10)
-#space['min_impurity_decrease'] = np.linspace(0,100,10)
-#space['init'] = ['zero',None]
-#space['max_features'] = [1, 'sqrt', 'log2']
-#space['max_leaf_nodes'] = [np.arange(2,1000,10),None]
-#space['validation_fraction'] = np.linspace(0.01,0.99,10)
+space['loss'] = ['log_loss','exponential'] # log_loss best - default setting
+space['learning_rate'] = [0.1,0.4] # 0.2 best
+space['n_estimators'] = [160,140] # 150 best
+space['subsample'] = [0.8,0.5] # 0.78 best
+space['criterion'] = ['friedman_mse','squared_error'] # friedman_use best - default setting 
+space['min_samples_split'] = [10,80] # 92 best 
+space['min_samples_leaf'] = [1,20] # 1 best
+#space['min_weight_fraction_leaf'] = np.linspace(0,0.5,10) # 0.05 best default performs best
+space['max_depth'] = [10,50] # 1 best - default setting
+#space['min_impurity_decrease'] = np.linspace(0,100,10) # 0 best - default setting
+#space['init'] = ['zero',None] # best None - default setting 
+space['max_features'] = ['sqrt', 'log2'] # log2 best
+#space['max_leaf_nodes'] = np.arange(2,1000,5)
+#space['validation_fraction'] = [0.001,0.005] # best 0.01, basically no change
 
 
 # define search

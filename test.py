@@ -10,8 +10,6 @@ import sklearn.model_selection as skl_ms
 
 from sklearn import tree
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier,GradientBoostingClassifier
-
-
 train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
 
@@ -29,9 +27,8 @@ X_val = valdata.drop(columns=['Lead'])
 y_val = valdata['Lead']
 
 models = []
-models.append(GradientBoostingClassifier(learning_rate=0.25,n_estimators = 150))
-models.append(GradientBoostingClassifier(learning_rate=0.25,n_estimators = 150))
-models.append(GradientBoostingClassifier(learning_rate=0.25,n_estimators = 150))
+models.append(GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50))
+models.append(GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50))
 
 
 
@@ -60,7 +57,7 @@ for n in range(n_fold):
     X_train = traindata.drop(columns=['Lead'])
     y_train = traindata['Lead']
 
-    model = GradientBoostingClassifier(learning_rate=0.25,n_estimators = 150)
+    model = GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50)
     model.fit(X_train,y_train)
     prediction = model.predict(X_val)
     missclassification[n] = np.mean(prediction == y_val)
