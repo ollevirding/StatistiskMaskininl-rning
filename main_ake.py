@@ -7,6 +7,21 @@ import sklearn.preprocessing as skl_pre
 import sklearn.linear_model as skl_lm
 import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
+def inputNormalization(x,xval, change = False):
+    if not change: 
+        x=x.copy()
+        xval = xval.copy()
+
+    maxs = [max(x[col]) for col in x]
+    mins = [min(x[col]) for col in x]
+
+    for i,col in enumerate(x):
+        #for val in x[col]
+        x[col] = x[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        xval[col] = xval[col].apply(lambda val: (val-mins[i])/(maxs[i]-mins[i]))
+        #x[col] = (x[col]-mins[i])/(maxs[i]-mins[i])
+    return [x,xval]
+
 
 data = pd.read_csv("train.csv", na_values='?', dtype={'ID': str}).dropna().reset_index()
 
@@ -25,7 +40,7 @@ indexFemale = [i for i,gender in enumerate(data["Lead"]) if gender == "Female"] 
 #plt.show()
 
 def getMF(dataName):
-    return [[data[dataName][i] for i in indexMale], [data[dataName][i] for i in indexFemale]]
+    return [[x[dataName][i] for i in indexMale], [x[dataName][i] for i in indexFemale]]
 
 def plotData(x,y, malecol = "blue", femcol = "red"):
     plt.title(f"Male {malecol} | Female {femcol}")
@@ -36,8 +51,30 @@ def plotData(x,y, malecol = "blue", femcol = "red"):
     plt.show()
 
 
+
+
+
+plotData("Year", "Gross")
+
+#new = x["Year"]*x["Gross"]
+#x = x.assign(newvar = new)
+#x["Gross"] = np.log(x['Gross'])
 #plotData("Year", "Gross")
-#plotData("Year","Total words")
+
+#x = inputNormalization(x,x)[0]
+#x["Gross"] = np.square(x['Gross'])#np.log(x['Gross'])
+#x["Year"] = np.square(x['Year'])#np.log(x['Gross'])
+
+#plotData("Year","Gross")
+plotData("Number words male","Gross")
+plotData("Number words female","Gross")
+
+grossm, grossf = getMF("Gross")
+
+plt.hist(grossm)
+plt.hist(grossf)
+plt.show()
+    
 def gross():
     mf = getMF("Gross")
 
@@ -58,7 +95,6 @@ def gross():
     '''
     Vill amplify stora värden och hålla små isch samma
     '''
-
 def totwrd():
     mf = getMF("Total words")
 
@@ -139,7 +175,6 @@ def diffwrd():
     '''
     inte superstor påverkan?
     '''
-
 def leadwrd():
     mf = getMF("Number of words lead")
 
@@ -160,8 +195,6 @@ def leadwrd():
     '''
     inte superstor påverkan?
     '''
-
-
 def nummale():
     mf = getMF("Number of male actors")
 
@@ -263,8 +296,8 @@ def yr():
     inte superstor påverkan?
     '''
 
-gross()
-print(data.get("Difference in words lead and co-lead").corr(data.get("Total words")))
+#gross()
+#print(data.get("Difference in words lead and co-lead").corr(data.get("Total words")))
 
 
 

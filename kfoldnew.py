@@ -114,7 +114,7 @@ def kfold(x,y,k,model, norm = False, **args):
             acc = np.mean(prediction == holdy)
             Ehold.append(acc)
 
-    Eholdavg = np.average(Ehold)
+    Eholdavg = np.average(Ehold) #1-E_hold ?!
     #print("E_new approx", Eholdavg)
 
     #goodmodel = skl_da.QuadraticDiscriminantAnalysis()
@@ -122,6 +122,8 @@ def kfold(x,y,k,model, norm = False, **args):
     #goodmodel.fit(traincompletex, traincompletey)
 
     goodm = model(**args)
+    if norm: #???
+         x = inputNormalization(x,x)
     goodm.fit(x, y)
     return [goodm, Eholdavg]
 
