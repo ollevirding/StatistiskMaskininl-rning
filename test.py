@@ -15,7 +15,7 @@ test = pd.read_csv('test.csv')
 
 X = train.drop(columns=['Lead'])
 y = train['Lead']
-
+train.info()
 trainI = np.random.choice(train.shape[0],size=800,replace=False)
 trainIndex = train.index.isin(trainI)
 traindata = train.iloc[trainIndex]
@@ -27,41 +27,44 @@ X_val = valdata.drop(columns=['Lead'])
 y_val = valdata['Lead']
 
 models = []
-models.append(GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50))
-models.append(GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50))
-
+models.append(GradientBoostingClassifier(learning_rate = 0.1,n_estimators=220))
+models.append(GradientBoostingClassifier(learning_rate = 0.1,n_estimators=210))
 
 
 n_fold = 10
-missclassification = np.zeros(n_fold)
+n_runs = 5
+acc = np.zeros((n_fold,n_runs))
+for runs in range(n_runs):
 
+    for n in range(n_fold):
+  
+        trainI = np.random.choice(train.shape[0],size=800,replace=False)
+        trainIndex = train.index.isin(trainI)
+        traindata = train.iloc[trainIndex]
+        valdata = train.iloc[~trainIndex]
 
-for n in range(n_fold):
-    trainI = np.random.choice(train.shape[0],size=800,replace=False)
-    trainIndex = train.index.isin(trainI)
-    traindata = train.iloc[trainIndex]
-    valdata = train.iloc[~trainIndex]
+        X_train = traindata.drop(columns=['Lead','Gross','Total words'])
+        y_train = traindata['Lead']
+        X_val = valdata.drop(columns=['Lead','Gross','Total words'])
+        y_val = valdata['Lead'] 
 
-    X_train = traindata.drop(columns=['Lead'])
-    y_train = traindata['Lead']
-    X_val = valdata.drop(columns=['Lead'])
-    y_val = valdata['Lead'] 
-    for m in range(np.shape(models)[0]):
-        model = models[m]
+        for m in range(np.shape(models)[0]):
+            model = models[m]
+            model.fit(X_train,y_train)
+            prediction = model.predict(X_train)
+            for i,j in enumerate(prediction):
+                if j != y_train.iloc[i]:
+                    for k in range(5):
+                        traindata.loc[np.shape(traindata)[0]+1]=(traindata.loc[y_train.index[i]])
+    
+        X_train = traindata.drop(columns=['Lead','Gross','Total words'])
+        y_train = traindata['Lead']
+
+        model = GradientBoostingClassifier(learning_rate = 0.1,n_estimators=190)
         model.fit(X_train,y_train)
-        prediction = model.predict(X_train)
-        for i,j in enumerate(prediction):
-            if j != y_train.iloc[i]:
-                for k in range(10):
-                    traindata.loc[np.shape(traindata)[0]+1]=(traindata.loc[y_train.index[i]])
-    X_train = traindata.drop(columns=['Lead'])
-    y_train = traindata['Lead']
+        prediction = model.predict(X_val)
+        acc[n,runs] = np.mean(prediction == y_val)
 
-    model = GradientBoostingClassifier(learning_rate=0.15,n_estimators=160,subsample=0.9,min_samples_split = 80, max_features = 'sqrt',max_depth = 50)
-    model.fit(X_train,y_train)
-    prediction = model.predict(X_val)
-    missclassification[n] = np.mean(prediction == y_val)
-
-plt.boxplot(missclassification)
-plt.title('Accuracy for different models')
+plt.boxplot(acc)
+plt.title('Accuracy for LoveBoosting')
 plt.show()
