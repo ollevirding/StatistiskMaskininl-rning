@@ -17,11 +17,9 @@ np.random.seed(1)
 
 train = pd.read_csv('train.csv')
 
-X = train.drop(columns=['Lead'])
 
-
+X = train.drop(columns=['Lead','Total words', 'Gross'])
 y = train['Lead']
-X_train, X_val, y_train, y_val = skl_ms.train_test_split(X, y, test_size=0.3)
 
 parameters = [
     [350],  # n_estimators (The number of trees in the forrest)
@@ -125,6 +123,6 @@ print('Confusion Matrix for Gradient Boosting:\n')
 print(pd.crosstab(prediction,y_val),'\n')
 
 plt.boxplot(missclassification)
-plt.title('Cross validation acc for different models')
+plt.title('Cross validation accuracy for Random Forrest Classifier')
 plt.xticks(np.arange(1)+1,['Random Forest Classifier'])
 plt.show()
