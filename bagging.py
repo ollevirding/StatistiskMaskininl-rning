@@ -7,6 +7,8 @@ import sklearn.discriminant_analysis as skl_da
 
 import sklearn.neighbors as skl_nb
 
+import matplotlib.pyplot as plt
+
 
 data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
 x = data.drop(columns=["Lead"])
@@ -41,7 +43,7 @@ x = x.drop(columns=["Gross"])
 
 numwordratiodf = (x["Number words female"]-x["Number words male"])/x["Total words"]
 x=x.assign(numwordratio = numwordratiodf)
-#x=x.drop(columns=["Number words female"])
+x=x.drop(columns=["Number words female"]) ##borta
 x=x.drop(columns=["Number words male"])
 
 
@@ -63,26 +65,45 @@ x=x.drop(columns=["Age Lead"])
 x=x.drop(columns=["Age Co-Lead"])
 
 
+
 def weights(x, col, w, change = False):
     if not change: x = x.copy()
     x[col] = x[col].apply(lambda val: val*w)
     return x
 
 
-xn = inputNormalization(x,x)[0]
+#x = inputNormalization(x,x)[0]
+
+'''
 xn = weights(xn, "diffage", 10)
 xn = weights(xn, "diffage2", 10)
 xn = weights(xn, "numwordratio", 10)
+'''
+
+err = []
+for i in range(100):
+    model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True)
+    model.fit(x, y)
+    err.append(model.oob_score_)
+
+plt.boxplot(err)
+plt.title("Bagging accuracy for 100 runs")
+plt.show()
 
 
-model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True)
-model.fit(xn, y)
 
+#print(pd.crosstab(predic,yval))
+#model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True)
+#model.fit(x, y)
+
+
+#E_train = np.mean(model.predict(x) == y)
+#print(pd.crosstab(model.predict(x), y))
 #knn låg neighboors -> mycket komplexitet, liten bias men stor varians -> bagging bra
 #knn
 
-#model = BaggingClassifier(estimator=skl_nb.KNeighborsClassifier(n_neighbors=3), n_estimators=200, oob_score=True)
-#model.fit(x, y)
+#model = BaggingClassifier(estimator=skl_nb.KNeighborsClassifier(n_neighbors=4), n_estimators=200, oob_score=True)
+#model.fit(xn, y)
 
 
 #knn med norm
@@ -103,4 +124,7 @@ men reducerar varians
 OOB: varje "bag" använder ~63% av den originella datan -> det som blir kvar kan 
 användas som hold out och användas för felberäkning, likt kfold
 '''
-print(model.oob_score_)
+
+#print("E_new", 1-model.oob_score_)
+#print("Training error", 1-E_train)
+#print("Generalization gap", E_train-model.oob_score_)

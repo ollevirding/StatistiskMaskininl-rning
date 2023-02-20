@@ -52,8 +52,6 @@ def plotData(x,y, malecol = "blue", femcol = "red"):
 
 
 
-
-
 plotData("Year", "Gross")
 
 #new = x["Year"]*x["Gross"]

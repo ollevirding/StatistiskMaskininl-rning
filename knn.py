@@ -34,6 +34,7 @@ def squareInput(x, col, change = False):
     if not change: x = x.copy()
     x[col] = x[col].apply(lambda val: val**2)
     return x
+
 def expInput(x, col, change = False): 
     if not change: x = x.copy()
     x[col] = x[col].apply(lambda val: np.exp(val))

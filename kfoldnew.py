@@ -129,5 +129,10 @@ def kfold(x,y,k,model, norm = False, **args):
 
 
 
+#from sklearn.model_selection import StratifiedKFold as skf
+'''
+Stratified kfold? Behåller fördelningen i splitsen
+'''
+
 #kfold(skl_lm.LogisticRegression, solver = "liblinear")
 #print(kfold(skl_da.QuadraticDiscriminantAnalysis))
