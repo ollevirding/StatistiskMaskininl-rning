@@ -29,7 +29,7 @@ def inputNormalization(x,xval, change = False):
     return [x,xval]
 
 #fixa så skicka in x,y iaf vill fippla med inputsen, ex normalsering i knn
-def kfold(k,model, norm = False, **args):
+def kfold(x,y,k,model, norm = False, **args):
     '''
     K-fold låter oss använda hela datasetet och samtidigt få ett reliable värde 
     på expected new error E_new 
@@ -39,13 +39,11 @@ def kfold(k,model, norm = False, **args):
     3. Använd nu hela trainingset för model 
     '''
     np.random.seed(1)
-
-    traincomplete = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
-
-    traincompletex = traincomplete.drop(columns=["Lead"])
-    traincompletey = traincomplete["Lead"]
     
 
+    xy = pd.concat([x,y], axis=1)
+
+    l = xy.shape[0]
     #test = pd.read_csv('test.csv')
 
     #x = train.drop(columns=['Lead'])
@@ -54,19 +52,18 @@ def kfold(k,model, norm = False, **args):
     #print("Number of inputs", traincomplete.shape[0])
 
 
-    
-    klen = int(traincomplete.shape[0]/k)
+    klen = int(l/k)
 
 
-    splitInd = [i*klen for i in range(int(traincomplete.shape[0] / klen)+1)]
+    splitInd = [i*klen for i in range(int(l / klen)+1)]
     #print(splitInd)
 
-    if splitInd[-1] != traincomplete.shape[0]-1:
+    if splitInd[-1] != l-1:
         splitInd.pop()
         #splitInd.append(x.shape[0]-1)
 
     #print(splitInd)
-    traincompleteshuffle = traincomplete.sample(frac=1) #make sure the training data is not ordered
+    traincompleteshuffle = xy.sample(frac=1) #make sure the training data is not ordered
     #print(xshuffle.index)
     #print(x.index)
     ''' behöver nog inte göra såhär
@@ -92,7 +89,7 @@ def kfold(k,model, norm = False, **args):
 
             else:#alt använd reindex på xshuffle och kör vanliga ~
                 r=[i for i in range(ind, splitInd[i+1])] #~inverterar 
-                rnot = [i for i in range(ind)] + [i for i in range(splitInd[i+1], traincomplete.shape[0])]            
+                rnot = [i for i in range(ind)] + [i for i in range(splitInd[i+1], l)]            
                 hold = traincompleteshuffle.iloc[r]#[ind:splitInd[i+1]]
                 train = traincompleteshuffle.iloc[rnot]
 
@@ -117,7 +114,7 @@ def kfold(k,model, norm = False, **args):
             acc = np.mean(prediction == holdy)
             Ehold.append(acc)
 
-    Eholdavg = np.average(Ehold)
+    Eholdavg = np.average(Ehold) #1-E_hold ?!
     #print("E_new approx", Eholdavg)
 
     #goodmodel = skl_da.QuadraticDiscriminantAnalysis()
@@ -125,7 +122,9 @@ def kfold(k,model, norm = False, **args):
     #goodmodel.fit(traincompletex, traincompletey)
 
     goodm = model(**args)
-    goodm.fit(traincompletex, traincompletey)
+    if norm: #???
+         x = inputNormalization(x,x)
+    goodm.fit(x, y)
     return [goodm, Eholdavg]
 
 
