@@ -81,7 +81,7 @@ xn = weights(xn, "numwordratio", 10)
 '''
 '''
 err = []
-for i in range(100):
+for i in range(50):
     model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(reg_param=0), n_estimators=400, oob_score = True)
     model.fit(x, y)
     err.append(model.oob_score_)
