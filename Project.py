@@ -24,7 +24,7 @@ np.random.seed(1)
 #kfold analysera hyperparemeter kan ge overfitting, dela upp ännu
 #mer och gör felanalys på den delen
 
-
+#####HALLÅ skriv kfold confusion matrix 
 
 def wrds():
     tot = X.get("Total words")

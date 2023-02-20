@@ -46,12 +46,13 @@ def plotData(x,y, malecol = "blue", femcol = "red"):
     plt.title(f"Male {malecol} | Female {femcol}")
     plt.xlabel(x)
     plt.ylabel(y)
-    plt.scatter(getMF(x)[0], getMF(y)[0], c=malecol)
-    plt.scatter(getMF(x)[1], getMF(y)[1], c=femcol)
+    plt.scatter(getMF(x)[0], getMF(y)[0], c=malecol, label = "male")
+    plt.scatter(getMF(x)[1], getMF(y)[1], c=femcol, label = "female")
+    plt.legend()
     plt.show()
 
 
-
+plotData("Mean Age Male", "Total words")
 plotData("Year", "Gross")
 
 #new = x["Year"]*x["Gross"]
@@ -64,6 +65,7 @@ plotData("Year", "Gross")
 #x["Year"] = np.square(x['Year'])#np.log(x['Gross'])
 
 #plotData("Year","Gross")
+'''
 plotData("Number words male","Gross")
 plotData("Number words female","Gross")
 
@@ -72,7 +74,7 @@ grossm, grossf = getMF("Gross")
 plt.hist(grossm)
 plt.hist(grossf)
 plt.show()
-    
+''' 
 def gross():
     mf = getMF("Gross")
 

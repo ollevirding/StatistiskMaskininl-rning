@@ -43,7 +43,7 @@ x = x.drop(columns=["Gross"])
 
 numwordratiodf = (x["Number words female"]-x["Number words male"])/x["Total words"]
 x=x.assign(numwordratio = numwordratiodf)
-x=x.drop(columns=["Number words female"]) ##borta
+#x=x.drop(columns=["Number words female"]) ##borta
 x=x.drop(columns=["Number words male"])
 
 
