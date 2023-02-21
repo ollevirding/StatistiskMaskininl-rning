@@ -93,7 +93,7 @@ plt.show()
 
 
 #print(pd.crosstab(predic,yval))
-model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True)
+model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True, max_samples=150)
 model.fit(x, y)
 
 
