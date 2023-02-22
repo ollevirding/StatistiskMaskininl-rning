@@ -4,6 +4,8 @@ from kfold import kfold as kf
 from kfoldnew import kfold as kfn
 import sklearn.neighbors as skl_nb
 import numpy as np
+import sklearn.metrics as met
+
 def inputNormalization(x,xval, change = False):
     if not change: 
         x=x.copy()
@@ -152,5 +154,5 @@ E_train_real = 1-E_train
 print("Estimated E_new:", E_new_real)
 print("E_train:", E_train_real)
 print("Generalization gap:", E_new_real-E_train_real)
-
+print("Balanced accuracy:",met.balanced_accuracy_score(y, pred_train))
 #test måste få samma normalisation
