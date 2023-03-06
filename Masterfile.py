@@ -10,7 +10,7 @@ import sklearn.model_selection as skl_ms
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, RepeatedStratifiedKFold
 
 from sklearn import tree
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
 
 np.random.seed(1)
 
@@ -82,11 +82,13 @@ model = GradientBoostingClassifier(
 )
 models.append(model)
 
+model = BaggingClassifier(base_estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
+models.append(model)
 
 n_fold = 10
-
-for model in models:
-    missclassification = np.zeros((n_fold, len(models)))
+missclassification = np.zeros((n_fold, len(models)))
+for m,model in enumerate(models):
+    
     cv = skl_ms.KFold(n_splits=n_fold, random_state=1, shuffle=True)
 
     for i, (train_index, val_index) in enumerate(cv.split(x)):
@@ -95,13 +97,13 @@ for model in models:
         y_train, y_val = y.iloc[train_index], y.iloc[val_index]
         model.fit(X_train, y_train)
         prediction = model.predict(X_val)
-        missclassification[i] = np.mean(prediction == y_val)
-    plt.boxplot(missclassification)
-
+        missclassification[i,m] = np.mean(prediction == y_val)
+plt.boxplot(missclassification)
+plt.title('Cross validation accuracy for Random Forrest Classifier')
+plt.xticks(np.arange(len(models))+1, ['Random Forest Classifier', 'Gradient Boosting','Bagging'])
+plt.show()
 
 print('Confusion Matrix for Gradient Boosting:\n')
 print(pd.crosstab(prediction, y_val), '\n')
 
-plt.title('Cross validation accuracy for Random Forrest Classifier')
-plt.xticks(np.arange(2)+1, ['Random Forest Classifier', 'Gradient Boosting'])
-plt.show()
+
