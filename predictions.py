@@ -43,7 +43,6 @@ x_test = InputSelection(x_test)
 model.fit(x_train,y_train)
 
 prediction = model.predict(x_test)
-df = pd.DataFrame(prediction)
-df.to_csv('predictions.csv', index=False)
-
+print(prediction)
+np.savetxt('predictions.csv', prediction, delimiter=',')
 
