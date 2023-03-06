@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 import sklearn.discriminant_analysis as skl_da
 import kfoldnew as kfn
-import sklearn.metrics as met
 '''
 Uses Bagging with base mode QDA
 Kfold is only implemented to retrive the confusion matrix for "unseen data"
