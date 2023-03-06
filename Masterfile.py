@@ -229,11 +229,18 @@ y_train = data["Lead"]
 x_train = InputSelection(x_train)
 x_test = InputSelection(x_test)
 
-model.fit(x_train,y)
+model.fit(x_train,y_train)
 
 prediction = model.predict(x_test)
-prediction.to_csv('predictions.csv', index=False)
 
+for i,gender in enumerate(prediction):
+    if gender == 'Male':
+        prediction[i] = int(0)
+    else:
+        prediction[i] = int(1)
+
+
+np.savetxt('predictions.csv', np.reshape(prediction, [1, -1]), delimiter=',', fmt='%d')
 
 
 
