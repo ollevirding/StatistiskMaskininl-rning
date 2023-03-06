@@ -148,7 +148,7 @@ for m,model in enumerate(models):
 #====================================================#
 
 
-data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
+data = pd.read_csv('train.csv') 
 x = data.drop(columns=["Lead"])
 y = data["Lead"]
 
