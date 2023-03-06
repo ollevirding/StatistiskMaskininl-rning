@@ -44,11 +44,12 @@ model.fit(x_train,y_train)
 
 prediction = model.predict(x_test)
 
-for i in prediction:
-    if i == 'Male':
-        i = 0
+for i,gender in enumerate(prediction):
+    if gender == 'Male':
+        prediction[i] = int(0)
     else:
-        i = 1
+        prediction[i] = int(1)
 
-np.savetxt('predictions.csv', prediction, delimiter=',')
+
+np.savetxt('predictions.csv', np.reshape(prediction, [1, -1]), delimiter=',')
 
