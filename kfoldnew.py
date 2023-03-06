@@ -80,6 +80,7 @@ def kfold(x,y,k,model, norm = False, **args):
 
     #print(sum([len(x) for x in xsplit]))
     Ehold = []
+    conf = []
     for i,ind in enumerate(splitInd):
             if i == len(splitInd)-1:
                 hold = traincompleteshuffle.iloc[ind:]
@@ -112,6 +113,8 @@ def kfold(x,y,k,model, norm = False, **args):
             m.fit(trainx, trainy)
             prediction = m.predict(holdx)
             acc = np.mean(prediction == holdy)
+            confmat = pd.crosstab(prediction, holdy).to_numpy()
+            conf.append(confmat)
             Ehold.append(acc)
 
     Eholdavg = np.average(Ehold) #1-E_hold ?!
@@ -125,7 +128,20 @@ def kfold(x,y,k,model, norm = False, **args):
     if norm: #???
          x = inputNormalization(x,x)
     goodm.fit(x, y)
-    return [goodm, Eholdavg]
+
+
+    #This gives the approximate confusion data for unseen data (Test data)
+    confarr = np.zeros((2,2))
+    for c in conf:
+        confarr[0,0] += c[0,0]
+        confarr[1,0] += c[1,0]
+        confarr[0,1] += c[0,1]
+        confarr[1,1] += c[1,1]
+    confarr = confarr/len(conf)
+
+    
+    #balanced accuracy fixa
+    return goodm, Eholdavg, confarr
 
 
 

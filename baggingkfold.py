@@ -1,13 +1,17 @@
 #!/bin/python3
 
+'''
+Uses Bagging with base mode QDA
+Kfold is only implemented to retrive the confusion matrix for "unseen data"
+The error estimation oob_score and the kfold estimation of E_new should be essentially equivalent
+'''
+
+
 from sklearn.ensemble import BaggingClassifier
 import pandas as pd
 import numpy as np
 import sklearn.discriminant_analysis as skl_da
-
-import sklearn.neighbors as skl_nb
-
-import matplotlib.pyplot as plt
+import kfoldnew as kfn
 
 
 data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
@@ -93,11 +97,22 @@ plt.show()
 
 
 #print(pd.crosstab(predic,yval))
-model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True)
-model.fit(x, y)
+#model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True, max_samples=150)
+#model, Ekfld, conf = kfn.kfold(x,y,15,model)
+
+model, Ekfld, conf = kfn.kfold(x,y,15,BaggingClassifier, False, estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True, max_samples=150)
+
+print(f"E_new from kfold {Ekfld}")
+print(f"oob score {model.oob_score_}")
+pred = model.predict(x)
+etrain = np.mean(pred == y)
+print(f"E_train {etrain}")
+print(f"E_gap {Ekfld-etrain}")
+
+print(f"Confusion matrix {conf}")
 
 
-E_train = np.mean(model.predict(x) == y)
+#E_train = np.mean(pred == y)
 #print(pd.crosstab(model.predict(x), y))
 #knn låg neighboors -> mycket komplexitet, liten bias men stor varians -> bagging bra
 #knn
@@ -124,7 +139,12 @@ men reducerar varians
 OOB: varje "bag" använder ~63% av den originella datan -> det som blir kvar kan 
 användas som hold out och användas för felberäkning, likt kfold
 '''
-print(model.oob_score_)
-print("E_new", 1-model.oob_score_)
-print("Training error", 1-E_train)
-print("Generalization gap", E_train-model.oob_score_)
+#print(model.oob_score_)
+#print("E_new", 1-model.oob_score_)
+#print("Training error", 1-E_train)
+#print("Generalization gap", E_train-model.oob_score_)
+
+#print("Balanced accuracy:",met.balanced_accuracy_score(y, pred))
+
+#print('Confusion Matrix for Gradient Boosting:\n')
+#print(pd.crosstab(pred,y),'\n')
