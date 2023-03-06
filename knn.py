@@ -143,7 +143,7 @@ borde inte kfold normalisera varje lilla
 #model, error1 = kfn(x,y,15,skl_nb.KNeighborsClassifier, True, n_neighbors = 8)
 #print(error1)
 
-model, E_new = kfn(xn,y,10,skl_nb.KNeighborsClassifier, False, n_neighbors = 8)
+model, E_new, conf = kfn(xn,y,10,skl_nb.KNeighborsClassifier, False, n_neighbors = 8)
 print(E_new)
 
 E_new_real = 1-E_new
