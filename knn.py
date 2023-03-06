@@ -145,7 +145,6 @@ borde inte kfold normalisera varje lilla
 
 model, E_new, conf = kfn(xn,y,10,skl_nb.KNeighborsClassifier, False, n_neighbors = 8)
 print(E_new)
-
 E_new_real = 1-E_new
 
 pred_train = model.predict(xn)

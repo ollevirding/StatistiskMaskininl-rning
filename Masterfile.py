@@ -10,39 +10,39 @@ import sklearn.model_selection as skl_ms
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, RepeatedStratifiedKFold
 
 from sklearn import tree
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
 
 np.random.seed(1)
 
-
-
-data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
+data = pd.read_csv('train.csv')
 x = data.drop(columns=["Lead"])
 y = data["Lead"]
 
 x = x.drop(columns=["Year"])
 x = x.drop(columns=["Gross"])
 
-numwordratiodf = (x["Number words female"]-x["Number words male"])/x["Total words"]
-x=x.assign(numwordratio = numwordratiodf)
-x=x.drop(columns=["Number words male"])
+numwordratiodf = (x["Number words female"] -
+                  x["Number words male"])/x["Total words"]
+x = x.assign(numwordratio=numwordratiodf)
+x = x.drop(columns=["Number words male"])
 
-diffagedf = x["Mean Age Male"]-x["Mean Age Female"] 
-x=x.assign(diffage = diffagedf)
-x=x.drop(columns=["Mean Age Male"])
-x=x.drop(columns=["Mean Age Female"])
+diffagedf = x["Mean Age Male"]-x["Mean Age Female"]
+x = x.assign(diffage=diffagedf)
+x = x.drop(columns=["Mean Age Male"])
+x = x.drop(columns=["Mean Age Female"])
 
 diffage2df = x["Age Lead"]-x["Age Co-Lead"]
-x=x.assign(diffage2 = diffage2df)
-x=x.drop(columns=["Age Lead"])
-x=x.drop(columns=["Age Co-Lead"])
+x = x.assign(diffage2=diffage2df)
+x = x.drop(columns=["Age Lead"])
+x = x.drop(columns=["Age Co-Lead"])
 
 
-
-def weights(x, col, w, change = False):
-    if not change: x = x.copy()
+def weights(x, col, w, change=False):
+    if not change:
+        x = x.copy()
     x[col] = x[col].apply(lambda val: val*w)
     return x
+
 
 parameters = [
     [600],  # n_estimators (The number of trees in the forrest)
@@ -62,41 +62,48 @@ parameters = [
     # bootstrap (Whether bootstrap samples are used when building trees)
     [True],
 ]
-
+models = []
 model = RandomForestClassifier(
-    n_estimators                =   parameters[0][0],
-    criterion                   =   parameters[1][0],
-    max_depth                   =   parameters[2][0],
-    min_samples_split           =   parameters[3][0],
-    min_samples_leaf            =   parameters[4][0],
-    min_weight_fraction_leaf    =   parameters[5][0],
-    max_leaf_nodes              =   parameters[7][0],
-    bootstrap                   =   parameters[9][0]
+    n_estimators=parameters[0][0],
+    criterion=parameters[1][0],
+    max_depth=parameters[2][0],
+    min_samples_split=parameters[3][0],
+    min_samples_leaf=parameters[4][0],
+    min_weight_fraction_leaf=parameters[5][0],
+    max_leaf_nodes=parameters[7][0],
+    bootstrap=parameters[9][0]
 )
 
-
-
-n_fold = 100
-models = []
 models.append(model)
 
-missclassification = np.zeros((n_fold,len(models)))
-cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
-for i,(train_index,val_index) in enumerate(cv.split(x)):
+model = GradientBoostingClassifier(
+    learning_rate=0.1,
+    n_estimators=210
+)
+models.append(model)
+
+model = BaggingClassifier(base_estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
+models.append(model)
+
+n_fold = 10
+missclassification = np.zeros((n_fold, len(models)))
+for m,model in enumerate(models):
     
-    X_train,X_val = x.iloc[train_index],x.iloc[val_index]
-    y_train,y_val = y.iloc[train_index],y.iloc[val_index]
-    for m in range(np.shape(models)[0]):
-        model = models[m]
-        model.fit(X_train,y_train)
+    cv = skl_ms.KFold(n_splits=n_fold, random_state=1, shuffle=True)
+
+    for i, (train_index, val_index) in enumerate(cv.split(x)):
+
+        X_train, X_val = x.iloc[train_index], x.iloc[val_index]
+        y_train, y_val = y.iloc[train_index], y.iloc[val_index]
+        model.fit(X_train, y_train)
         prediction = model.predict(X_val)
-        missclassification[i,m] = np.mean(prediction==y_val)
-        print(pd.crosstab(prediction,y_val),'\n')
-
-print('Confusion Matrix for Gradient Boosting:\n')
-print(pd.crosstab(prediction,y_val),'\n')
-
+        missclassification[i,m] = np.mean(prediction == y_val)
 plt.boxplot(missclassification)
 plt.title('Cross validation accuracy for Random Forrest Classifier')
-plt.xticks(np.arange(1)+1,['Random Forest Classifier'])
+plt.xticks(np.arange(len(models))+1, ['Random Forest Classifier', 'Gradient Boosting','Bagging'])
 plt.show()
+
+print('Confusion Matrix for Gradient Boosting:\n')
+print(pd.crosstab(prediction, y_val), '\n')
+
+

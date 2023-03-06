@@ -27,8 +27,9 @@ X_val = valdata.drop(columns=['Lead'])
 y_val = valdata['Lead']
 
 models = []
-models.append(GradientBoostingClassifier(learning_rate = 0.1,n_estimators=220))
-models.append(GradientBoostingClassifier(learning_rate = 0.1,n_estimators=210))
+models.append(skl_da.QuadraticDiscriminantAnalysis())
+models.append(skl_da.QuadraticDiscriminantAnalysis())
+#models.append(GradientBoostingClassifier(learning_rate = 0.1,n_estimators=210))
 
 
 n_fold = 10
