@@ -48,6 +48,26 @@ def expminusInput(x, col, change = False):
     x[col] = x[col].apply(lambda val: np.exp(-val))
     return x
 
+def InputSelection(x):
+    x = x.drop(columns=["Year"])
+    x = x.drop(columns=["Gross"])
+
+    numwordratiodf = (x["Number words female"] -
+                    x["Number words male"])/x["Total words"]
+    x = x.assign(numwordratio=numwordratiodf)
+    x = x.drop(columns=["Number words male"])
+
+    diffagedf = x["Mean Age Male"]-x["Mean Age Female"]
+    x = x.assign(diffage=diffagedf)
+    x = x.drop(columns=["Mean Age Male"])
+    x = x.drop(columns=["Mean Age Female"])
+
+    diffage2df = x["Age Lead"]-x["Age Co-Lead"]
+    x = x.assign(diffage2=diffage2df)
+    x = x.drop(columns=["Age Lead"])
+    x = x.drop(columns=["Age Co-Lead"])
+    return x
+
 #====================================================#
 #   INPUT MANIPULATION                               #
 #====================================================#
@@ -57,23 +77,8 @@ data = pd.read_csv('train.csv')
 x = data.drop(columns=["Lead"])
 y = data["Lead"]
 
-x = x.drop(columns=["Year"])
-x = x.drop(columns=["Gross"])
+x = InputSelection(x)
 
-numwordratiodf = (x["Number words female"] -
-                  x["Number words male"])/x["Total words"]
-x = x.assign(numwordratio=numwordratiodf)
-x = x.drop(columns=["Number words male"])
-
-diffagedf = x["Mean Age Male"]-x["Mean Age Female"]
-x = x.assign(diffage=diffagedf)
-x = x.drop(columns=["Mean Age Male"])
-x = x.drop(columns=["Mean Age Female"])
-
-diffage2df = x["Age Lead"]-x["Age Co-Lead"]
-x = x.assign(diffage2=diffage2df)
-x = x.drop(columns=["Age Lead"])
-x = x.drop(columns=["Age Co-Lead"])
 
 #===============================================================#
 #   K-FOLD FOR RANDOM FORREST, BAGGING AND GRADIENT BOOSTING    #
@@ -122,7 +127,7 @@ models.append(model)
 model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
 models.append(model)
 
-n_fold = 10
+n_fold = 2
 missclassification = np.zeros((n_fold, len(models)+1))
 recall = np.zeros((n_fold, len(models)+1))
 precision = np.zeros((n_fold, len(models)+1))
@@ -215,36 +220,19 @@ plt.show()
 
 model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
 
-data = pd.read_csv('test.csv') 
-x_test = pd.read_csv('train.csv') 
+data = pd.read_csv('train.csv') 
+x_test = pd.read_csv('test.csv') 
 
 x_train = data.drop(columns=["Lead"])
 y_train = data["Lead"]
 
-for x in [x_train, x_test]:
+x_train = InputSelection(x_train)
+x_test = InputSelection(x_test)
 
-    x = x.drop(columns=["Year"])
-    x = x.drop(columns=["Gross"])
+model.fit(x_train,y)
 
-    numwordratiodf = (x["Number words female"] -
-                    x["Number words male"])/x["Total words"]
-    x = x.assign(numwordratio=numwordratiodf)
-    x = x.drop(columns=["Number words male"])
-
-    diffagedf = x["Mean Age Male"]-x["Mean Age Female"]
-    x = x.assign(diffage=diffagedf)
-    x = x.drop(columns=["Mean Age Male"])
-    x = x.drop(columns=["Mean Age Female"])
-
-    diffage2df = x["Age Lead"]-x["Age Co-Lead"]
-    x = x.assign(diffage2=diffage2df)
-    x = x.drop(columns=["Age Lead"])
-    x = x.drop(columns=["Age Co-Lead"])
-
-model.fit(x[0],y)
-
-prediction = model.predict(x[1])
-print(prediction)
+prediction = model.predict(x_test)
+prediction.to_csv('predictions.csv', index=False)
 
 
 
