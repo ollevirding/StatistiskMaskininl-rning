@@ -14,28 +14,10 @@ from scipy.stats import loguniform
 
 train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
-train.info()
-X = train.drop(columns=['Lead'])
+
+X = train.drop(columns=['Lead','Total words','Gross'])
 y = train['Lead']
-X = X.drop(columns=["Year"])
-#X["Gross"] = np.square(X['Gross'])
-X = X.drop(columns=["Gross"])
-
-numwordratiodf = (X["Number words female"]-X["Number words male"])/X["Total words"]
-X=X.assign(numwordratio = numwordratiodf)
-#x=x.drop(columns=["Number words female"])
-X=X.drop(columns=["Number words male"])
-
-diffagedf = X["Mean Age Male"]-X["Mean Age Female"] #bäst error med översta men rimligare med båda
-X=X.assign(diffage = diffagedf)
-X=X.drop(columns=["Mean Age Male"])
-X=X.drop(columns=["Mean Age Female"])
-
-diffage2df = X["Age Lead"]-X["Age Co-Lead"]
-X=X.assign(diffage2 = diffage2df)
-X=X.drop(columns=["Age Lead"])
-X=X.drop(columns=["Age Co-Lead"])
-
+X_train,X_val,y_train,y_val = skl_ms.train_test_split(X,y,test_size=0.3)
 
 #model = GradientBoostingClassifier(learning_rate=0.3,n_estimators=250,min_samples_split = 12,max_features='sqrt',subsample=0.9)
 
@@ -44,11 +26,19 @@ n_runs = 2
 estimators = [180,190,200,220,250]
 accuracy = np.zeros((n_fold,n_runs+1))
 models = []
-n_estimators = 250
+n_estimators = 210
 models.append(GradientBoostingClassifier(learning_rate = 0.1,n_estimators=n_estimators))
-models.append(BaggingClassifier(base_estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400))
+models.append(GradientBoostingClassifier())
 model = GradientBoostingClassifier(learning_rate = 0.1, n_estimators = n_estimators)
 acc = np.zeros(n_fold)
+for n in range(n_fold):
+    X_train,X_val,y_train,y_val = skl_ms.train_test_split(X,y,test_size=0.3)
+
+    model.fit(X_train,y_train)
+    prediction = model.predict(X_val)
+    acc[n] = np.mean(prediction==y_val)
+
+print(f'Accuracy of tuned GradiantBoosting {np.mean(acc)}')
 
 for n in range(n_runs):
     cv = skl_ms.KFold(n_splits=n_fold,random_state=0,shuffle=True)
@@ -77,12 +67,6 @@ plt.title(f'K-Fold validation acc for GradientBoosting for n_estimators  = {n_es
 plt.xticks(np.arange(n_runs+1)+1,('Tuned Gradiant Boosting','Untuned Gradient Boosting','Classifier Only Guessing Male'))
 plt.show()
 
-X_train,X_val,y_train,y_val = skl_ms.train_test_split(X,y,test_size=0.3)
-model = GradientBoostingClassifier(learning_rate = 0.1,n_estimators=n_estimators)
-model.fit(X_train,y_train)
-prediction = model.predict(X_val)
-acc = np.mean(prediction == y_val)
-print(acc)
 print('Confusion Matrix for tuned Gradient Boosting:\n')
 print(pd.crosstab(prediction,y_val),'\n')
 

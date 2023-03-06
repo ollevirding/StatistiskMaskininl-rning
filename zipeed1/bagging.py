@@ -9,8 +9,6 @@ import sklearn.neighbors as skl_nb
 
 import matplotlib.pyplot as plt
 
-import sklearn.metrics as met
-
 
 data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
 x = data.drop(columns=["Lead"])
@@ -95,12 +93,11 @@ plt.show()
 
 
 #print(pd.crosstab(predic,yval))
-model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True, max_samples=150)
+model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400, oob_score = True)
 model.fit(x, y)
 
-pred = model.predict(x)
 
-E_train = np.mean(pred == y)
+E_train = np.mean(model.predict(x) == y)
 #print(pd.crosstab(model.predict(x), y))
 #knn låg neighboors -> mycket komplexitet, liten bias men stor varians -> bagging bra
 #knn
@@ -131,8 +128,3 @@ print(model.oob_score_)
 print("E_new", 1-model.oob_score_)
 print("Training error", 1-E_train)
 print("Generalization gap", E_train-model.oob_score_)
-
-print("Balanced accuracy:",met.balanced_accuracy_score(y, pred))
-
-print('Confusion Matrix for Gradient Boosting:\n')
-print(pd.crosstab(pred,y),'\n')
