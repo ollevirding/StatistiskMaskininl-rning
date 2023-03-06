@@ -51,5 +51,5 @@ for i,gender in enumerate(prediction):
         prediction[i] = int(1)
 
 
-np.savetxt('predictions.csv', np.reshape(prediction, [1, -1]), delimiter=',')
+np.savetxt('predictions.csv', np.reshape(prediction, [1, -1]), delimiter=',', fmt='%d')
 
