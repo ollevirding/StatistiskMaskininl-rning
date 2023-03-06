@@ -1,17 +1,11 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import sklearn.preprocessing as skl_pre
 import sklearn.metrics as skl_m
-import sklearn.linear_model as skl_lm
 import sklearn.discriminant_analysis as skl_da
 import sklearn.neighbors as skl_nb
 import sklearn.model_selection as skl_ms
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, RepeatedStratifiedKFold
-from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
-from kfold import kfold as kf
-import sklearn.neighbors as skl_nb
 
 def inputNormalization(x,xval, change = False):
     if not change: 
@@ -54,6 +48,10 @@ def expminusInput(x, col, change = False):
     x[col] = x[col].apply(lambda val: np.exp(-val))
     return x
 
+#====================================================#
+#   INPUT MANIPULATION                               #
+#====================================================#
+
 
 data = pd.read_csv('train.csv')
 x = data.drop(columns=["Lead"])
@@ -77,12 +75,10 @@ x = x.assign(diffage2=diffage2df)
 x = x.drop(columns=["Age Lead"])
 x = x.drop(columns=["Age Co-Lead"])
 
+#===============================================================#
+#   K-FOLD FOR RANDOM FORREST, BAGGING AND GRADIENT BOOSTING    #
+#===============================================================#
 
-def weights(x, col, w, change=False):
-    if not change:
-        x = x.copy()
-    x[col] = x[col].apply(lambda val: val*w)
-    return x
 
 
 parameters = [
@@ -123,7 +119,7 @@ model = GradientBoostingClassifier(
 )
 models.append(model)
 
-model = BaggingClassifier(base_estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
+model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
 models.append(model)
 
 n_fold = 10
@@ -145,6 +141,12 @@ for m,model in enumerate(models):
         f1[i,m] = skl_m.f1_score(prediction,y_val,pos_label='Female')
         precision[i,m] = skl_m.precision_score(prediction,y_val,pos_label='Female')
         recall[i,m] = skl_m.recall_score(prediction,y_val,pos_label='Female')
+
+
+#====================================================#
+#   K-FOLD FOR K-NEAREST NEIGHBOUR                   #
+#====================================================#
+
 
 data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
 x = data.drop(columns=["Lead"])
@@ -185,6 +187,11 @@ for i, (train_index, val_index) in enumerate(cv.split(x)):
     precision[i,3] = skl_m.precision_score(prediction,y_val,pos_label='Female')
     recall[i,3] = skl_m.recall_score(prediction,y_val,pos_label='Female')
 
+
+#====================================================#
+#   PLOTTING RESULTS                                 #
+#====================================================#
+
 plt.boxplot(missclassification)
 plt.title('Cross validation accuracy for different Methods')
 plt.xticks(np.arange(len(models)+1)+1, ['Random Forest Classifier', 'Gradient Boosting','Bagging','knn'])
@@ -201,5 +208,46 @@ plt.boxplot(precision)
 plt.title('Precision for different Methods')
 plt.xticks(np.arange(len(models)+1)+1, ['Random Forest Classifier', 'Gradient Boosting','Bagging','knn'])
 plt.show()
+
+#====================================================#
+#   OUR PREDICTIONS FOR TEST DATA                    #
+#====================================================#
+
+model = BaggingClassifier(estimator=skl_da.QuadraticDiscriminantAnalysis(), n_estimators=400)
+
+data = pd.read_csv('test.csv') 
+x_test = pd.read_csv('train.csv') 
+
+x_train = data.drop(columns=["Lead"])
+y_train = data["Lead"]
+
+for x in [x_train, x_test]:
+
+    x = x.drop(columns=["Year"])
+    x = x.drop(columns=["Gross"])
+
+    numwordratiodf = (x["Number words female"] -
+                    x["Number words male"])/x["Total words"]
+    x = x.assign(numwordratio=numwordratiodf)
+    x = x.drop(columns=["Number words male"])
+
+    diffagedf = x["Mean Age Male"]-x["Mean Age Female"]
+    x = x.assign(diffage=diffagedf)
+    x = x.drop(columns=["Mean Age Male"])
+    x = x.drop(columns=["Mean Age Female"])
+
+    diffage2df = x["Age Lead"]-x["Age Co-Lead"]
+    x = x.assign(diffage2=diffage2df)
+    x = x.drop(columns=["Age Lead"])
+    x = x.drop(columns=["Age Co-Lead"])
+
+model.fit(x[0],y)
+
+prediction = model.predict(x[1])
+print(prediction)
+
+
+
+
 
 
