@@ -15,79 +15,53 @@ from sklearn.ensemble import RandomForestClassifier
 np.random.seed(1)
 
 
-train = pd.read_csv('train.csv')
+
+data = pd.read_csv('train.csv') # kanske egentligen borde vara parameter
+x = data.drop(columns=["Lead"])
+y = data["Lead"]
+
+x = x.drop(columns=["Year"])
+x = x.drop(columns=["Gross"])
+
+numwordratiodf = (x["Number words female"]-x["Number words male"])/x["Total words"]
+x=x.assign(numwordratio = numwordratiodf)
+x=x.drop(columns=["Number words male"])
+
+diffagedf = x["Mean Age Male"]-x["Mean Age Female"] 
+x=x.assign(diffage = diffagedf)
+x=x.drop(columns=["Mean Age Male"])
+x=x.drop(columns=["Mean Age Female"])
+
+diffage2df = x["Age Lead"]-x["Age Co-Lead"]
+x=x.assign(diffage2 = diffage2df)
+x=x.drop(columns=["Age Lead"])
+x=x.drop(columns=["Age Co-Lead"])
 
 
-X = train.drop(columns=['Lead','Total words', 'Gross'])
-y = train['Lead']
+
+def weights(x, col, w, change = False):
+    if not change: x = x.copy()
+    x[col] = x[col].apply(lambda val: val*w)
+    return x
 
 parameters = [
-    [350],  # n_estimators (The number of trees in the forrest)
-    ["log_loss"],  # criterion (The function to measure the quality of a split)
+    [600],  # n_estimators (The number of trees in the forrest)
+    ["entropy"],  # criterion (The function to measure the quality of a split)
     [60],  # Max_depth (The maximum depth of the tree)
     # min_samples_split (The minimum number of samples required to split an internal node)
     [7],
     # min_samples_leaf (The minimum number of samples required to be at a leaf node)
-    [1],
+    [3],
     # min_weight_fraction_leaf (The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.)
     [0.0],
     # max_features (The number of features to consider when looking for the best split:)
-    [None],
+    [3],
     [420],  # max_leaf_nodes (Grow trees with max_leaf_nodes in best-first fashion. Best nodes are defined as relative reduction in impurity. If None then unlimited number of leaf nodes.)
     # min_impurity_decrease (A node will be split if this split induces a decrease of the impurity greater than or equal to this value.)
     [0.0],
     # bootstrap (Whether bootstrap samples are used when building trees)
     [True],
 ]
-
-"""parameters = [
-    range(280,400,20), #n_estimators (The number of trees in the forrest)
-    ["gini", "entropy", "log_loss"], #criterion (The function to measure the quality of a split)
-    [5, 10, 50, 100, 200, None], #Max_depth (The maximum depth of the tree)
-    [2, 4, 8, 16, 32, 64, 128], #min_samples_split (The minimum number of samples required to split an internal node)
-    [1, 2, 4, 8, 16, 32, 64, 128], #min_samples_leaf (The minimum number of samples required to be at a leaf node)
-    [0.0, 0.01, 0.1, 1.0, 10.0, 100.0], #min_weight_fraction_leaf (The minimum weighted fraction of the sum total of weights (of all the input samples) required to be at a leaf node.)
-    ["sqrt", "log2", None], #max_features (The number of features to consider when looking for the best split:)
-    [10, 50, 100, 200, 500, 1000, None], #max_leaf_nodes (Grow trees with max_leaf_nodes in best-first fashion. Best nodes are defined as relative reduction in impurity. If None then unlimited number of leaf nodes.)
-    [0.0, 0.001, 0.01, 0.1, 0.5], #min_impurity_decrease (A node will be split if this split induces a decrease of the impurity greater than or equal to this value.)
-    [True, False], #bootstrap (Whether bootstrap samples are used when building trees)
-    [-1, None] #n_job (Process in use)
- ]"""
-
-"""
-#Define Model
-model = RandomForestClassifier()
-
-#Define evaluation
-cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=2, random_state=0)
-
-#Define space
-space = dict()
-
-space['n_estimators'] = parameters[0]
-space['criterion'] = parameters[1]
-space['max_depth'] = parameters[2]
-space['min_samples_split'] = parameters[3]
-space['min_samples_leaf'] = parameters[4]
-space['min_weight_fraction_leaf'] = parameters[5]
-space['max_features'] = parameters[6]
-space['max_leaf_nodes'] = parameters[7]
-space['min_impurity_decrease'] = parameters[8]
-space['bootstrap'] = parameters[9]
-
-
-search = GridSearchCV(model, space, scoring='accuracy', n_jobs=-1, cv=cv)
-
-result = search.fit(X, y)
-
-
-summarize result
-print('Best Score: %s\n' % result.best_score_)
-print('Best Hyperparameters:')
-for item, value in result.best_params_.items():
-    print(f"{item}: \t\t{value}")
-
- """
 
 model = RandomForestClassifier(
     n_estimators                =   parameters[0][0],
@@ -102,22 +76,22 @@ model = RandomForestClassifier(
 
 
 
-n_fold = 10
+n_fold = 100
 models = []
 models.append(model)
 
 missclassification = np.zeros((n_fold,len(models)))
 cv = skl_ms.KFold(n_splits=n_fold,random_state=1,shuffle=True)
-
-for i,(train_index,val_index) in enumerate(cv.split(X)):
+for i,(train_index,val_index) in enumerate(cv.split(x)):
     
-    X_train,X_val = X.iloc[train_index],X.iloc[val_index]
+    X_train,X_val = x.iloc[train_index],x.iloc[val_index]
     y_train,y_val = y.iloc[train_index],y.iloc[val_index]
     for m in range(np.shape(models)[0]):
         model = models[m]
         model.fit(X_train,y_train)
         prediction = model.predict(X_val)
         missclassification[i,m] = np.mean(prediction==y_val)
+        print(pd.crosstab(prediction,y_val),'\n')
 
 print('Confusion Matrix for Gradient Boosting:\n')
 print(pd.crosstab(prediction,y_val),'\n')
