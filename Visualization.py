@@ -22,8 +22,16 @@ for index, row in train.iterrows():
     else:
         Word_male.at[index] += row['Number of words lead']
 
+number_male = []
+number_female = []
+for role in train['Lead']:
+    if role == 'Male':
+        number_male.append(1)
+    elif role == 'Female':
+        number_female.append(1)
 
-
+print(f'Number of lead male actors = {len(number_male)}')
+print(f'Number of lead female actors = {len(number_female)}')
 
 plt.boxplot([Word_male, Word_female])
 plt.xticks([1,2],['Male','Female'])
@@ -32,12 +40,9 @@ plt.show()
 
 
 plt.scatter(train['Year'] ,[Word_male - Word_female])
-plt.title("Number of words split across gender and year")
+plt.title("Difference in words between the genders across the years")
 plt.show()
 
 plt.scatter([Word_male - Word_female], train['Gross'])
-plt.title("Income based on the fraction of words spoken by Male divided by Female")
-plt.show()
-
-plt.scatter(train['Total words'],train['Lead'])
+plt.title("Movie Gross based on the difference of words spoken by Male and Female")
 plt.show()
