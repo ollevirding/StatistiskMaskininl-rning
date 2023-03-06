@@ -23,27 +23,23 @@ for index, row in train.iterrows():
         Word_male.at[index] += row['Number of words lead']
 
 
-
-if False:
-    plt.boxplot([Word_male, Word_female])
-    plt.xticks([1,2],['Male','Female'])
-    plt.title("Number of words split across gender")
-    plt.show()
-
-
-plt.scatter(train['Year'] ,[Word_male - Word_female])
+plt.scatter(train['Year'] ,[Word_male - Word_female], label = "Data points")
 m1 = skl_lm.LinearRegression()
-m1.fit(train['Year'], Word_male-Word_female)
-ycalc = m1.predict(train["Year"])
-print(ycalc)
-plt.plot(train['Year'], ycalc)
+
+x = train["Year"]
+y = Word_male-Word_female
+
+y = y.values.reshape(-1,1)
+x = x.values.reshape(-1,1)
+
+m1.fit(x, y)
+ycalc = m1.predict(x)
+#print(ycalc)
+
+
+plt.plot(x, ycalc,'r', label = f"Fitted line y = {round(m1.coef_[0,0])}x + {round(m1.intercept_[0])}")
+plt.legend()
+plt.xlabel("Year")
+plt.ylabel("Male words - Female words")
 plt.title("Difference of words split across gender and year")#number
 plt.show()
-
-if False:
-    plt.scatter([Word_male - Word_female], train['Gross'])
-    plt.title("Income based on the fraction of words spoken by Male divided by Female")
-    plt.show()
-
-    plt.scatter(train['Total words'],train['Lead'])
-    plt.show()

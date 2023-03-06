@@ -133,3 +133,6 @@ print("Training error", 1-E_train)
 print("Generalization gap", E_train-model.oob_score_)
 
 print("Balanced accuracy:",met.balanced_accuracy_score(y, pred))
+
+print('Confusion Matrix for Gradient Boosting:\n')
+print(pd.crosstab(pred,y),'\n')
