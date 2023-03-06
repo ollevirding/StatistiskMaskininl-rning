@@ -43,6 +43,12 @@ x_test = InputSelection(x_test)
 model.fit(x_train,y_train)
 
 prediction = model.predict(x_test)
-print(prediction)
+
+for i in prediction:
+    if i == 'Male':
+        i = 0
+    else:
+        i = 1
+
 np.savetxt('predictions.csv', prediction, delimiter=',')
 
